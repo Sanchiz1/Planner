@@ -10,13 +10,10 @@ namespace Application.Common.Interfaces;
 public interface IIdentityService
 {
     Task<Result<string>> RegisterAsync(string userName, string email, string password);
-    Task<Result<string>> LoginAsync(string userName, string password);
+    Task<Result<string>> LoginAsync(string email);
+    Task<Result<string>> LoginPasswordAsync(string userName, string password);
+    Task<Result<string>> LoginExternalAsync(string userName, string email);
     Task<string?> GetUserNameAsync(string userId);
     Task<bool> IsInRoleAsync(string userId, string role);
-
-    Task<bool> AuthorizeAsync(string userId, string policyName);
-
-    Task<string> CreateUserAsync(string userName, string password);
-
     Task DeleteUserAsync(string userId);
 }

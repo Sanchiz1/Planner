@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Identity.Queries;
 
-public record LoginQuery : IRequest<Result<string>>
+public record LoginPasswordQuery : IRequest<Result<string>>
 {
     public string Username { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 }
 
-public class LoginQueryHandler : IRequestHandler<LoginQuery, Result<string>>
+public class LoginPasswordQueryHandler : IRequestHandler<LoginPasswordQuery, Result<string>>
 {
     private readonly IIdentityService _identityService;
 
-    public LoginQueryHandler(IIdentityService identityService)
+    public LoginPasswordQueryHandler(IIdentityService identityService)
     {
         _identityService = identityService;
     }
 
-    public async Task<Result<string>> Handle(LoginQuery request, CancellationToken cancellationToken)
-        => await _identityService.LoginAsync(request.Username, request.Password);
+    public async Task<Result<string>> Handle(LoginPasswordQuery request, CancellationToken cancellationToken)
+        => await _identityService.LoginPasswordAsync(request.Username, request.Password);
 }

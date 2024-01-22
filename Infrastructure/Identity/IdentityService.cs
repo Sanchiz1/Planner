@@ -25,12 +25,12 @@ public class IdentityService : IIdentityService
         _signInManager = signInManager;
         _tokenService = tokenService;
     }
-
     public async Task<Result<string>> RegisterAsync(string userName, string email, string password)
     {
         var user = new User
         {
-            UserName = userName,
+            displayName = userName,
+            UserName = email,
             Email = email,
         };
 
@@ -43,21 +43,54 @@ public class IdentityService : IIdentityService
 
         return "Registered successfully";
     }
-    public async Task<Result<string>> LoginAsync(string userName, string password)
+    public async Task<Result<string>> LoginAsync(string email)
     {
-        var result = await _signInManager.PasswordSignInAsync(userName,
-              password, true, lockoutOnFailure: false);
+        var user = await _userManager.FindByEmailAsync(email);
 
-        var user = await _userManager.FindByNameAsync(userName);
+        if (user == null) return new Exception("User not found");
 
-        if (user != null && await _userManager.CheckPasswordAsync(user, password))
+        await _signInManager.SignInAsync(user, true);
+
+        var token = _tokenService.GenerateToken(user);
+
+        return token;
+    }
+    public async Task<Result<string>> LoginPasswordAsync(string email, string password)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null) return new Exception("Invalid password ot username");
+
+        if(!await _userManager.CheckPasswordAsync(user, password)) return new Exception("Invalid password ot username");
+
+        await _signInManager.SignInAsync(user, true);
+
+        var token = _tokenService.GenerateToken(user);
+
+        return token;
+    }
+    public async Task<Result<string>> LoginExternalAsync(string userName, string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null)
         {
-            var token = _tokenService.GenerateToken(user);
+            var registrationUser = new User
+            {
+                displayName = userName,
+                UserName = email,
+                Email = email,
+            };
 
-            return token;
+            var result = await _userManager.CreateAsync(registrationUser);
+
+            if (!result.Succeeded)
+            {
+                return new Exception(result.Errors.First().Description);
+            }
         }
 
-        return new Exception("Wrong password or username");
+        return await LoginAsync(email);
     }
     public async Task<string?> GetUserNameAsync(string userId)
     {
@@ -66,33 +99,11 @@ public class IdentityService : IIdentityService
         return user.UserName;
     }
 
-    public async Task<string> CreateUserAsync(string userName, string password)
-    {
-        var user = new User
-        {
-            UserName = userName,
-            Email = userName,
-        };
-
-        var result = await _userManager.CreateAsync(user, password);
-
-        return user.Id;
-    }
-
     public async Task<bool> IsInRoleAsync(string userId, string role)
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
         return user != null && await _userManager.IsInRoleAsync(user, role);
-    }
-
-    public async Task<bool> AuthorizeAsync(string Email, string Password)
-    {
-        var result = await _signInManager.PasswordSignInAsync(Email,
-              Password, true, lockoutOnFailure: false);
-
-
-        return result.Succeeded;
     }
 
     public async Task DeleteUserAsync(string userId)

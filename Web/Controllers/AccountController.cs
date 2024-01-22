@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Web.Controllers;
 
@@ -35,7 +36,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [Route("Login")]
-    public async Task<ActionResult<string>> Login(LoginQuery query)
+    public async Task<ActionResult<string>> Login(LoginPasswordQuery query)
     {
         var result = await sender.Send(query);
 
@@ -47,7 +48,7 @@ public class AccountController : Controller
 
     [HttpGet]
     [Route("google-login")]
-    public  ActionResult GoogleLogin()
+    public ActionResult GoogleLogin()
     {
         var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
 
@@ -56,19 +57,29 @@ public class AccountController : Controller
 
     [HttpGet]
     [Route("google-response")]
-    public async Task<ActionResult<IEnumerable<Claim>>> GoogleResponse()
+    public async Task<ActionResult> GoogleResponse()
     {
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-        //return Json(result);
-        var claims = result.Principal.Identities.FirstOrDefault()
-            .Claims.Select(claim => new
+        if (result == null || !result.Succeeded) return BadRequest("Login failed");
+
+        var username = result.Principal.Identities.First().Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
+        var email = result.Principal.Identities.First().Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
+
+        var loginResult = await sender.Send(new LoginExternalQuery()
+        {
+            Username = username,
+            Email = email
+        });
+
+        return loginResult.Match<ActionResult>(
+            res =>
             {
-                claim.Issuer,
-                claim.OriginalIssuer,
-                claim.Type,
-                claim.Value
-            });
-        return Json(claims);
+                HttpContext.Response.Cookies.Append("accessToken", res, new CookieOptions { IsEssential = true });
+
+                return Redirect("http://localhost:3000/Login");
+            },
+            ex => BadRequest(ex.Message)
+            );
     }
 }
