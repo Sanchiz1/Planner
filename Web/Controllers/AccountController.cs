@@ -6,7 +6,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -17,9 +19,11 @@ namespace Web.Controllers;
 public class AccountController : Controller
 {
     public readonly ISender sender;
-    public AccountController(ISender _sender)
+    public readonly IConfiguration configuraion;
+    public AccountController(ISender _sender, IConfiguration _configuraion)
     {
         sender = _sender;
+        configuraion = _configuraion;
     }
 
     [HttpPost]
@@ -77,7 +81,9 @@ public class AccountController : Controller
             {
                 HttpContext.Response.Cookies.Append("accessToken", res, new CookieOptions { IsEssential = true });
 
-                return Redirect("http://localhost:3000/Login");
+                string url = configuraion["JwtSettings:Audience"];
+
+                return Redirect(url);
             },
             ex => BadRequest(ex.Message)
             );

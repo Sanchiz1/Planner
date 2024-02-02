@@ -12,9 +12,9 @@ namespace Application.UseCases.Identity.Commands;
 
 public record RegisterCommand : IRequest<Result<string>>
 {
-    public string Username { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public required string Username { get; init; }
+    public required string Email { get; init; }
+    public required string Password { get; init; }
 }
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<string>>

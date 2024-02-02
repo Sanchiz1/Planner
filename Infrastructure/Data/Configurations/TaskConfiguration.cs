@@ -22,6 +22,6 @@ internal class TaskConfiguration : IEntityTypeConfiguration<Domain.Entities.Task
         builder.Property(t => t.Description)
             .HasMaxLength(1000);
 
-        builder.HasOne<User>().WithMany().HasForeignKey(t => t.UserId);
+        //builder.HasOne<Workspace>().WithMany().HasForeignKey(t => t.WorkspaceId);
     }
 }

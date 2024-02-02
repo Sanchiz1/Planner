@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.DTOs;
+using Application.Common.Interfaces;
 using MediatR;
 using Shared;
 using System;
@@ -11,7 +12,7 @@ namespace Application.UseCases.Tasks.Commands;
 
 public record CreateTaskCommand : IRequest<Result<int>>
 {
-    public string Title { get; set; } = string.Empty;
+    public required string Title { get; set; }
     public string Description { get; set; } = string.Empty;
     public DateTime? StartDate { get; set; }
     public DateTime EndDate { get; set; }
@@ -28,13 +29,12 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, Resul
 
     public async Task<Result<int>> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
     {
-        var entity = new Domain.Entities.Task()
-        {
-            Title = request.Title,
-            Description = request.Description,
-            StartDate = request.StartDate,
-            EndDate = request.EndDate
-        };
+        var entity = new Domain.Entities.Task(
+            request.Title,
+            request.Description,
+            request.StartDate,
+            request.EndDate
+        );
 
         _context.Tasks.Add(entity);
 

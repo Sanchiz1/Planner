@@ -61,7 +61,7 @@ public class IdentityService : IIdentityService
 
         if (user == null) return new Exception("Invalid password ot username");
 
-        if(!await _userManager.CheckPasswordAsync(user, password)) return new Exception("Invalid password ot username");
+        if (!await _userManager.CheckPasswordAsync(user, password)) return new Exception("Invalid password ot username");
 
         await _signInManager.SignInAsync(user, true);
 

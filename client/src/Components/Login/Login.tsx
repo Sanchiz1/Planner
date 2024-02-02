@@ -32,7 +32,7 @@ export default function Login() {
         window.location.href = "https://localhost:7269/Account/google-login";
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleLoginSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         console.log({
@@ -44,7 +44,7 @@ export default function Login() {
     return (
         <Container maxWidth="xs"
             sx={{
-                height: '100%',
+                height: 'calc(100vh)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center'
@@ -64,7 +64,7 @@ export default function Login() {
                 <Typography component="h1" variant="h5">
                     Sign in
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleLoginSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required

@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,16 +8,14 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Configurations;
 
-internal class TagConfiguration : IEntityTypeConfiguration<Tag>
+public class WorkspaceConfiguration : IEntityTypeConfiguration<Workspace>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Tag> builder)
+    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Workspace> builder)
     {
         builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.Title)
+        builder.Property(t => t.Name)
             .HasMaxLength(100)
             .IsRequired();
-
-        //builder.HasOne<Domain.Entities.Task>().WithMany().HasForeignKey(t => t.TaskId);
     }
 }

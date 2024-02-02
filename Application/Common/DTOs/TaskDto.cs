@@ -9,8 +9,8 @@ namespace Application.Common.DTOs;
 public class TaskDto
 {
     public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
+    public required string Title { get; set; }
     public string Description { get; set; } = string.Empty;
-    public DateTime Date_Start { get; set; }
-    public DateTime? Date_End { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime EndDate { get; set; }
 }

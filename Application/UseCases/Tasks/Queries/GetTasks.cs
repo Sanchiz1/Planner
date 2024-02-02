@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 
 namespace Application.UseCases.Tasks.Queries;
 
-public record GetTasksQuery : IRequest<Result<List<TaskDto>>>;
-
+public record GetTasksQuery : IRequest<Result<List<TaskDto>>>
+{
+    public required string UserId { get; init; }
+}
 public class GetTasksQueryHandler : IRequestHandler<GetTasksQuery, Result<List<TaskDto>>>
 {
     private readonly IApplicationDbContext _context;
@@ -30,8 +32,8 @@ public class GetTasksQueryHandler : IRequestHandler<GetTasksQuery, Result<List<T
     {
         return await _context.Tasks
                 .AsNoTracking()
-                .ProjectTo<TaskDto>(_mapper.ConfigurationProvider)
                 .OrderBy(t => t.Title)
+                .ProjectTo<TaskDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
     }
 }

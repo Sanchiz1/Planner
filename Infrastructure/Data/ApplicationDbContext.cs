@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Domain.Membership;
+using static Application.Common.Interfaces.IApplicationDbContext;
 
 namespace Infrastructure.Data;
 
@@ -18,6 +20,10 @@ public class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbConte
 
     public DbSet<Domain.Entities.Task> Tasks => Set<Domain.Entities.Task>();
     public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<Workspace> Workspaces => Set<Workspace>();
+    public DbSet<Membership> Memberships => Set<Membership>();
+    public DbSet<Role> MembershipRoles => Set<Role>();
+    public DbSet<Post> Posts => Set<Post>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

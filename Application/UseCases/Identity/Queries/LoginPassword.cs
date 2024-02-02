@@ -12,8 +12,8 @@ namespace Application.UseCases.Identity.Queries;
 
 public record LoginPasswordQuery : IRequest<Result<string>>
 {
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public required string Email { get; set; }
+    public required string Password { get; set; }
 }
 
 public class LoginPasswordQueryHandler : IRequestHandler<LoginPasswordQuery, Result<string>>
@@ -26,5 +26,5 @@ public class LoginPasswordQueryHandler : IRequestHandler<LoginPasswordQuery, Res
     }
 
     public async Task<Result<string>> Handle(LoginPasswordQuery request, CancellationToken cancellationToken)
-        => await _identityService.LoginPasswordAsync(request.Username, request.Password);
+        => await _identityService.LoginPasswordAsync(request.Email, request.Password);
 }

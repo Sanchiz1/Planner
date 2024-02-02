@@ -9,24 +9,19 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Typography } from '@mui/material';
 
 export default function Tasks() {
 
   return (
-      <Container component="main" maxWidth="xs">
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-            Tasks
-        </Box>
-      </Container>
+    <Container component="main" maxWidth='xl'>
+      <Box>
+        <Typography variant='h3' gutterBottom>
+          Welcome to Planner
+        </Typography>
+      </Box>
+    </Container>
   );
 }

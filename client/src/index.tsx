@@ -5,20 +5,18 @@ import '@fontsource/roboto/700.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { ThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
+import './index.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-
 const defaultTheme = createTheme();
 
 root.render(
   <ThemeProvider theme={defaultTheme}>
-    <BrowserRouter>
       <App />
-    </BrowserRouter>
   </ThemeProvider>
 );

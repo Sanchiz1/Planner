@@ -1,13 +1,14 @@
 ﻿using Application.Common.DTOs;
+using Application.UseCases;
 using Application.UseCases.Tasks.Commands;
 using Application.UseCases.Tasks.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Web.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class TaskController : Controller
@@ -22,7 +23,8 @@ public class TaskController : Controller
     [Route("Tasks")]
     public async Task<ActionResult<List<TaskDto>>> GetTasks()
     {
-        var result = await sender.Send(new GetTasksQuery());
+        Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var result = await sender.Send(new GetTasksQuery() { UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value });
 
         return result.Match<ActionResult<List<TaskDto>>>(
             res => res,
@@ -37,6 +39,18 @@ public class TaskController : Controller
         var result = await sender.Send(command);
 
         return result.Match<ActionResult<int>>(
+            res => res,
+            ex => BadRequest(ex.Message)
+            );
+    }
+
+    [HttpPost]
+    [Route("TestUseCase")]
+    public async Task<ActionResult<int>> TestUseCase(TestUseCaseCommand command)
+    {
+        var result = await sender.Send(command);
+
+        return result.Match<ActionResult<int>> (
             res => res,
             ex => BadRequest(ex.Message)
             );

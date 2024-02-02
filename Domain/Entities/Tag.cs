@@ -9,6 +9,8 @@ namespace Domain.Entities;
 
 public class Tag : BaseEntity
 {
-    public int TaskId { get; set; }
-    public string Title {  get; set; } = string.Empty;
+    public string Title { get; private set; }
+    public Tag(string title) {
+        Title = title;
+    }
 }
