@@ -1,16 +1,8 @@
-﻿using Application.Common.DTOs;
-using Application.UseCases.Identity.Commands;
-using Application.UseCases.Identity.Queries;
-using Application.UseCases.Tasks.Queries;
-using MediatR;
+﻿using Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Web.Controllers;
 
@@ -18,31 +10,31 @@ namespace Web.Controllers;
 [Route("[controller]")]
 public class AccountController : Controller
 {
-    public readonly ISender sender;
+    public readonly IIdentityService identityService;
     public readonly IConfiguration configuraion;
-    public AccountController(ISender _sender, IConfiguration _configuraion)
+    public AccountController(IIdentityService _identityService, IConfiguration _configuraion)
     {
-        sender = _sender;
+        identityService = _identityService;
         configuraion = _configuraion;
     }
 
     [HttpPost]
     [Route("Register")]
-    public async Task<ActionResult<string>> Register(RegisterCommand comand)
+    public async Task<ActionResult<string>> Register(string userName, string email, string password)
     {
-        var result = await sender.Send(comand);
+        var result = await identityService.RegisterAsync(userName, email, password);
 
         return result.Match<ActionResult<string>>(
-            res => Ok(res),
-            ex => BadRequest(ex.Message)
-            );
+        res => Ok(res),
+        ex => BadRequest(ex.Message)
+        );
     }
 
     [HttpPost]
     [Route("Login")]
-    public async Task<ActionResult<string>> Login(LoginPasswordQuery query)
+    public async Task<ActionResult<string>> Login(string email , string password)
     {
-        var result = await sender.Send(query);
+        var result = await identityService.LoginPasswordAsync(email, password);
 
         return result.Match<ActionResult<string>>(
             res => Ok(res),
@@ -70,11 +62,7 @@ public class AccountController : Controller
         var username = result.Principal.Identities.First().Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
         var email = result.Principal.Identities.First().Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
 
-        var loginResult = await sender.Send(new LoginExternalQuery()
-        {
-            Username = username,
-            Email = email
-        });
+        var loginResult = await identityService.LoginExternalAsync(username, email);
 
         return loginResult.Match<ActionResult>(
             res =>

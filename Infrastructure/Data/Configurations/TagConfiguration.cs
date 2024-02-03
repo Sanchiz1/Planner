@@ -18,7 +18,5 @@ internal class TagConfiguration : IEntityTypeConfiguration<Tag>
         builder.Property(t => t.Title)
             .HasMaxLength(100)
             .IsRequired();
-
-        //builder.HasOne<Domain.Entities.Task>().WithMany().HasForeignKey(t => t.TaskId);
     }
 }

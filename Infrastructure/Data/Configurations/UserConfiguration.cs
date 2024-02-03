@@ -9,13 +9,14 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<User> builder)
+    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<ApplicationUser> builder)
     {
 
         builder
-            .HasMany(e => e.Memberships)
-            .WithOne();
+            .HasMany<Membership>()
+            .WithOne()
+            .HasForeignKey(t => t.UserId);
     }
 }

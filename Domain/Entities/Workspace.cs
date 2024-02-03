@@ -16,10 +16,4 @@ public class Workspace : BaseEntity
         Name = name;
         Tasks = new List<Task>();
     }
-
-    public void AddTask(Task task)
-    {
-        if (Tasks.Contains(task)) return;
-        Tasks.Add(task);
-    }
 }

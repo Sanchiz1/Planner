@@ -19,15 +19,15 @@ public class TokenService
         _configuration = configuration;
     }
 
-    public string GenerateToken(User user)
+    public string GenerateToken(ApplicationUser applicationUser)
     {
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, applicationUser.DisplayName),
+            new Claim(ClaimTypes.NameIdentifier, applicationUser.Id.ToString()),
         };
 
         var token = new JwtSecurityToken(

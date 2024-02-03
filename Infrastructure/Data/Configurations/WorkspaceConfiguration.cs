@@ -17,5 +17,9 @@ public class WorkspaceConfiguration : IEntityTypeConfiguration<Workspace>
         builder.Property(t => t.Name)
             .HasMaxLength(100)
             .IsRequired();
+
+        builder.HasMany(t => t.Tasks)
+            .WithOne()
+            .HasForeignKey(t => t.WorkspaceId);
     }
 }

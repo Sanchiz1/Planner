@@ -1,4 +1,4 @@
-﻿using Domain.Membership;
+﻿using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,7 +14,7 @@ public class MembershipConfiguration : IEntityTypeConfiguration<Membership>
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Membership> builder)
     {
         builder
-            .HasKey(bc => new { bc.WorkspaceId });
+            .HasKey(bc => bc.Id);
 
         builder
             .HasOne(bc => bc.Workspace)

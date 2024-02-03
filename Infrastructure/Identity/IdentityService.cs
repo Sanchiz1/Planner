@@ -13,13 +13,13 @@ namespace Infrastructure.Identity;
 
 public class IdentityService : IIdentityService
 {
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly TokenService _tokenService;
 
     public IdentityService(
-        UserManager<User> userManager,
-        SignInManager<User> signInManager, TokenService tokenService)
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager, TokenService tokenService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -27,9 +27,9 @@ public class IdentityService : IIdentityService
     }
     public async Task<Result<string>> RegisterAsync(string userName, string email, string password)
     {
-        var user = new User
+        var user = new ApplicationUser
         {
-            displayName = userName,
+            DisplayName = userName,
             UserName = email,
             Email = email,
         };
@@ -75,9 +75,9 @@ public class IdentityService : IIdentityService
 
         if (user == null)
         {
-            var registrationUser = new User
+            var registrationUser = new ApplicationUser
             {
-                displayName = userName,
+                DisplayName = userName,
                 UserName = email,
                 Email = email,
             };
@@ -92,21 +92,21 @@ public class IdentityService : IIdentityService
 
         return await LoginAsync(email);
     }
-    public async Task<string?> GetUserNameAsync(string userId)
+    public async Task<string?> GetUserNameAsync(int userId)
     {
         var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
 
         return user.UserName;
     }
 
-    public async Task<bool> IsInRoleAsync(string userId, string role)
+    public async Task<bool> IsInRoleAsync(int userId, string role)
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
         return user != null && await _userManager.IsInRoleAsync(user, role);
     }
 
-    public async Task DeleteUserAsync(string userId)
+    public async Task DeleteUserAsync(int userId)
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
@@ -114,8 +114,8 @@ public class IdentityService : IIdentityService
         await DeleteUserAsync(user);
     }
 
-    public async Task DeleteUserAsync(User user)
+    public async Task DeleteUserAsync(ApplicationUser applicationUser)
     {
-        var result = await _userManager.DeleteAsync(user);
+        var result = await _userManager.DeleteAsync(applicationUser);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Domain.Membership;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Identity;
 
-public class User : IdentityUser
+public class ApplicationUser : IdentityUser<int>
 {
     [Required]
     [MaxLength(100)]
-    public required string displayName { get; set; }
-    public List<Membership> Memberships { get; set; } = new List<Membership>();
+    public required string DisplayName { get; set; }
 }

@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Domain.Membership;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -8,13 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Domain.Membership;
 using static Application.Common.Interfaces.IApplicationDbContext;
 
 namespace Infrastructure.Data;
 
-public class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<int>, int>, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 

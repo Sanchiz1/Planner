@@ -12,10 +12,11 @@ namespace Application.UseCases.Tasks.Commands;
 
 public record CreateTaskCommand : IRequest<Result<int>>
 {
-    public required string Title { get; set; }
-    public string Description { get; set; } = string.Empty;
-    public DateTime? StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public int WorkspaceId { get; init; }
+    public required string Title { get; init; }
+    public string Description { get; init; } = string.Empty;
+    public DateTime? StartDate { get; init; }
+    public DateTime EndDate { get; init; }
 }
 
 public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, Result<int>>
@@ -30,6 +31,7 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, Resul
     public async Task<Result<int>> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
     {
         var entity = new Domain.Entities.Task(
+            request.WorkspaceId,
             request.Title,
             request.Description,
             request.StartDate,

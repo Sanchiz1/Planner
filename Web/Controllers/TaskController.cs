@@ -43,16 +43,4 @@ public class TaskController : Controller
             ex => BadRequest(ex.Message)
             );
     }
-
-    [HttpPost]
-    [Route("TestUseCase")]
-    public async Task<ActionResult<int>> TestUseCase(TestUseCaseCommand command)
-    {
-        var result = await sender.Send(command);
-
-        return result.Match<ActionResult<int>> (
-            res => res,
-            ex => BadRequest(ex.Message)
-            );
-    }
 }
