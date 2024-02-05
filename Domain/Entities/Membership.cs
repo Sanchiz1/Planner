@@ -10,10 +10,30 @@ public class Membership : BaseEntity
     public Workspace Workspace { get; private set; }
     public Role Role { get; private set; }
 
-    public Membership(int userId, int workspaceId, int roleId)
+    private Membership() { }
+
+    public static Membership CreateWorkspace(int userId, string workspaceName)
     {
-        UserId = userId;
-        WorkspaceId = workspaceId;
-        RoleId = roleId;
+        return new Membership()
+        {
+            UserId = userId,
+            Workspace = new Workspace(workspaceName),
+            RoleId = Role.OwnerRole.Id
+        };
+    }
+    
+    public static Membership AddToWorkspace(int userId, Workspace workspace, int roleId)
+    {
+        if (roleId == Role.OwnerRole.Id)
+        {
+            throw new ArgumentException("Cannot add another owner to workspace");
+        }
+        
+        return new Membership()
+        {
+            UserId = userId,
+            Workspace = workspace,
+            RoleId = roleId
+        };
     }
 }

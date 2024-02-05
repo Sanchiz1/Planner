@@ -20,10 +20,10 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasMaxLength(100)
             .IsRequired();
 
-        /*builder.HasData(
-            new Role(Roles.Owner) { Id = 1},
-            new Role(Roles.Member) { Id = 2},
-            new Role(Roles.Viewer) { Id = 3}
-            );*/
+        builder.HasData(
+            Role.OwnerRole,
+            Role.MemberRole,
+            Role.ViewerRole
+            );
     }
 }

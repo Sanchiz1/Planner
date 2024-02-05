@@ -23,7 +23,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<Workspace> Workspaces => Set<Workspace>();
     public DbSet<Membership> Memberships => Set<Membership>();
     public DbSet<Role> MembershipRoles => Set<Role>();
-    public DbSet<Post> Posts => Set<Post>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

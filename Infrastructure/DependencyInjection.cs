@@ -34,7 +34,7 @@ public static class DependencyInjection
 
         services
             .AddDefaultIdentity<ApplicationUser>()
-            .AddRoles<IdentityRole>()
+            .AddRoles<IdentityRole<int>>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
         services.AddSingleton<TokenService>();

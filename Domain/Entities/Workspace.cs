@@ -16,4 +16,9 @@ public class Workspace : BaseEntity
         Name = name;
         Tasks = new List<Task>();
     }
+
+    public void UpdateWorkspace(string name)
+    {
+        this.Name = Name;
+    }
 }
