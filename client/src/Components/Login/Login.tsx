@@ -11,7 +11,6 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Google } from '@mui/icons-material';
 
 function Copyright(props: any) {
@@ -42,13 +41,7 @@ export default function Login() {
     };
 
     return (
-        <Container maxWidth="xs"
-            sx={{
-                height: 'calc(100vh)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-            }}
+        <Container  component="main" maxWidth='xs' sx={{ pt: 8, pb: 6 }}
         >
             <Box
                 sx={{

@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Web.Extensions;
 
 namespace Web.Controllers;
 
@@ -13,7 +14,7 @@ namespace Web.Controllers;
 [Route("[controller]")]
 public class TaskController : Controller
 {
-    public readonly ISender sender;
+    private readonly ISender sender;
     public TaskController(ISender _sender)
     {
         sender = _sender;
@@ -23,8 +24,11 @@ public class TaskController : Controller
     [Route("Tasks")]
     public async Task<ActionResult<List<TaskDto>>> GetTasks()
     {
-        Console.WriteLine(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        var result = await sender.Send(new GetTasksQuery() { UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value });
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+        
+        var result = await sender.Send(new GetTasksQuery() { UserId = userId });
 
         return result.Match<ActionResult<List<TaskDto>>>(
             res => res,

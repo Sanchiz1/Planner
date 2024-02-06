@@ -20,12 +20,12 @@ const router = createBrowserRouter([
         element: <Tasks />,
         loader: async () => requireAuth()
       },
+      {
+        path: "/Login",
+        element: <Login />,
+      }
     ]
-  },
-  {
-    path: "/Login",
-    element: <Login />,
-  },
+  }
 ])
 
 function App() {

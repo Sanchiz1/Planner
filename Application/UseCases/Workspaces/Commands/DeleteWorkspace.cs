@@ -8,6 +8,7 @@ namespace Application.UseCases.Workspaces.Commands;
 
 public record DeleteWorkspaceCommand : IRequest<Result<string>>
 {
+    public int UserId { get; init; }
     public int MembershipId { get; init; }
 }
 
@@ -28,9 +29,7 @@ public class DeleteWorkspaceCommandHandler : IRequestHandler<DeleteWorkspaceComm
         
         if (entity == null) return new Exception("Membership not found");
         
-        if (entity.Workspace == null) return new Exception("Workspace not found");
-        
-        if (entity.RoleId != Role.OwnerRole.Id) return new Exception("Permission denied");
+        if (entity.RoleId != Role.OwnerRole.Id || entity.UserId != request.UserId) return new Exception("Permission denied");
         
         _context.Workspaces.Remove(entity.Workspace);
 

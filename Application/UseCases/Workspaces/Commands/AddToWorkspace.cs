@@ -8,9 +8,10 @@ namespace Application.UseCases.Workspaces.Commands;
 
 public record AddToWorkspaceCommand : IRequest<Result<string>>
 {
-    public int MembershipId { get; init; }
     public int UserId { get; init; }
-    public int RoleId { get; init; }
+    public int MembershipId { get; init; }
+    public int ToAddUserId { get; init; }
+    public int ToAddRoleId { get; init; }
 }
 
 public class AddToWorkspaceCommandHandler : IRequestHandler<AddToWorkspaceCommand, Result<string>>
@@ -30,11 +31,9 @@ public class AddToWorkspaceCommandHandler : IRequestHandler<AddToWorkspaceComman
         
         if (membership == null) return new Exception("Membership not found");
         
-        if (membership.Workspace == null) return new Exception("Workspace not found");
-        
-        if (membership.RoleId != Role.OwnerRole.Id) return new Exception("Permission denied");
+        if (membership.RoleId != Role.OwnerRole.Id || membership.UserId != request.UserId) return new Exception("Permission denied");
 
-        var entity = Membership.AddToWorkspace(membership.UserId, membership.Workspace, request.RoleId);
+        var entity = Membership.AddToWorkspace(request.ToAddUserId, membership.Workspace, request.ToAddRoleId);
         
         _context.Memberships.Add(entity);
 

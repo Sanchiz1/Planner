@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Web.Models;
+using Web.Models.Identity;
 
 namespace Web.Controllers;
 
@@ -10,19 +12,19 @@ namespace Web.Controllers;
 [Route("[controller]")]
 public class AccountController : Controller
 {
-    public readonly IIdentityService identityService;
-    public readonly IConfiguration configuraion;
-    public AccountController(IIdentityService _identityService, IConfiguration _configuraion)
+    private readonly IIdentityService _identityService;
+    private readonly IConfiguration _configuraion;
+    public AccountController(IIdentityService identityService, IConfiguration configuraion)
     {
-        identityService = _identityService;
-        configuraion = _configuraion;
+        _identityService = identityService;
+        _configuraion = configuraion;
     }
 
     [HttpPost]
     [Route("Register")]
-    public async Task<ActionResult<string>> Register(string userName, string email, string password)
+    public async Task<ActionResult<string>> Register([FromBody]RegisterDto request)
     {
-        var result = await identityService.RegisterAsync(userName, email, password);
+        var result = await _identityService.RegisterAsync(request.UserName, request.Email, request.Password);
 
         return result.Match<ActionResult<string>>(
         res => Ok(res),
@@ -32,9 +34,9 @@ public class AccountController : Controller
 
     [HttpPost]
     [Route("Login")]
-    public async Task<ActionResult<string>> Login(string email , string password)
+    public async Task<ActionResult<string>> Login([FromBody]LoginDto request)
     {
-        var result = await identityService.LoginPasswordAsync(email, password);
+        var result = await _identityService.LoginPasswordAsync(request.Email, request.Password);
 
         return result.Match<ActionResult<string>>(
             res => Ok(res),
@@ -62,14 +64,14 @@ public class AccountController : Controller
         var username = result.Principal.Identities.First().Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
         var email = result.Principal.Identities.First().Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
 
-        var loginResult = await identityService.LoginExternalAsync(username, email);
+        var loginResult = await _identityService.LoginExternalAsync(username, email);
 
         return loginResult.Match<ActionResult>(
             res =>
             {
                 HttpContext.Response.Cookies.Append("accessToken", res, new CookieOptions { IsEssential = true });
 
-                string url = configuraion["JwtSettings:Audience"];
+                string url = _configuraion["JwtSettings:Audience"];
 
                 return Redirect(url);
             },

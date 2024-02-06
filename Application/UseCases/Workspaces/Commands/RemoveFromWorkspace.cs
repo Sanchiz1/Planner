@@ -8,6 +8,7 @@ namespace Application.UseCases.Workspaces.Commands;
 
 public record RemoveFromWorkspaceCommand : IRequest<Result<string>>
 {
+    public int UserId { get; init; }
     public int MembershipId { get; init; }
     public int ToRemoveMembershipId { get; init; }
 }
@@ -28,7 +29,7 @@ public class RemoveFromWorkspaceCommandHandler : IRequestHandler<RemoveFromWorks
         
         if (membership == null) return new Exception("Membership not found");
         
-        if (membership.RoleId != Role.OwnerRole.Id) return new Exception("Permission denied");
+        if (membership.RoleId != Role.OwnerRole.Id || membership.UserId != request.UserId) return new Exception("Permission denied");
 
         var entity = await _context.Memberships
             .FirstOrDefaultAsync(membership => membership.Id == request.ToRemoveMembershipId, cancellationToken);

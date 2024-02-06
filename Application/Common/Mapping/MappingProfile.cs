@@ -13,6 +13,8 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
+        CreateMap<Membership, MembershipDto>();
+        CreateMap<Workspace, WorkspaceDto>();
         CreateMap<Domain.Entities.Task, TaskDto>();
         CreateMap<Tag, TagDto>();
     }

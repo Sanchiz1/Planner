@@ -16,8 +16,12 @@ export default function Header() {
                         Planner
                     </Typography>
                     <Typography variant="button" component={RouterLink} to='/Tasks'
-                        color="text.primary">
+                        color="text.primary" sx={{ mr: 3 }}>
                         Tasks
+                    </Typography>
+                    <Typography variant="button" component={RouterLink} to='/Login'
+                        color="text.primary">
+                        Login
                     </Typography>
                 </Toolbar>
             </AppBar>

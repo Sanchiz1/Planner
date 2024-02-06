@@ -15,7 +15,7 @@ namespace Application.UseCases.Tasks.Queries;
 
 public record GetTasksQuery : IRequest<Result<List<TaskDto>>>
 {
-    public required string UserId { get; init; }
+    public required int UserId { get; init; }
 }
 public class GetTasksQueryHandler : IRequestHandler<GetTasksQuery, Result<List<TaskDto>>>
 {

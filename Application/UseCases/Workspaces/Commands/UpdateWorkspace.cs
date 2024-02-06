@@ -8,6 +8,7 @@ namespace Application.UseCases.Workspaces.Commands;
 
 public record UpdateWorkspaceCommand : IRequest<Result<int>>
 {
+    public int UserId { get; init; }
     public int MembershipId { get; init; }
     public required string WorkspaceName { get; init; }
 }
@@ -29,9 +30,7 @@ public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceComm
         
         if (entity == null) return new Exception("Membership not found");
         
-        if (entity.Workspace == null) return new Exception("Workspace not found");
-        
-        if (entity.RoleId != Role.OwnerRole.Id) return new Exception("Permission denied");
+        if (entity.RoleId != Role.OwnerRole.Id || entity.UserId != request.UserId) return new Exception("Permission denied");
 
         entity.Workspace.UpdateWorkspace(request.WorkspaceName);
         
