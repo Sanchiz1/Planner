@@ -25,20 +25,21 @@ public class RemoveFromWorkspaceCommandHandler : IRequestHandler<RemoveFromWorks
     public async Task<Result<string>> Handle(RemoveFromWorkspaceCommand request, CancellationToken cancellationToken)
     {
         var membership = await _context.Memberships
-            .FirstOrDefaultAsync(membership => membership.Id == request.MembershipId, cancellationToken);
+            .FirstOrDefaultAsync(m => m.Id == request.MembershipId, cancellationToken);
         
         if (membership == null) return new Exception("Membership not found");
         
-        if (membership.RoleId != Role.OwnerRole.Id || membership.UserId != request.UserId) return new Exception("Permission denied");
+        if((request.MembershipId != request.ToRemoveMembershipId && !Role.IsOwner(membership.RoleId)) 
+           || !membership.IsMembershipOwner(request.UserId)) return new Exception("Permission denied");
 
-        var entity = await _context.Memberships
-            .FirstOrDefaultAsync(membership => membership.Id == request.ToRemoveMembershipId, cancellationToken);
+        var toRemoveMembership = await _context.Memberships
+            .FirstOrDefaultAsync(m => m.Id == request.ToRemoveMembershipId, cancellationToken);
         
-        if (entity == null) return new Exception("Membership not found");
+        if (toRemoveMembership == null) return new Exception("Membership not found");
         
-        if (entity.RoleId != Role.OwnerRole.Id) return new Exception("Cannot remove owner");
+        if (!Role.IsOwner(toRemoveMembership.RoleId)) return new Exception("Cannot remove owner");
         
-        _context.Memberships.Remove(entity);
+        _context.Memberships.Remove(toRemoveMembership);
 
         await _context.SaveChangesAsync(cancellationToken);
 

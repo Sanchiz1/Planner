@@ -4,7 +4,6 @@ using Application.UseCases.Workspaces.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Web.Extensions;
-using Web.Models;
 using Web.Models.Workspace;
 
 namespace Web.Controllers;

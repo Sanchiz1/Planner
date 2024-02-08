@@ -21,6 +21,9 @@ public class Role : BaseEntity
         Name = name;
     }
 
+    public static bool IsOwner(int roleId) => OwnerRole.Id == roleId;
+    public static bool IsMember(int roleId) => MemberRole.Id == roleId;
+    public static bool IsViewer(int roleId) => ViewerRole.Id == roleId;
     public static Role OwnerRole => new Role(1, Roles.Owner);
     public static Role MemberRole => new Role(2, Roles.Member);
     public static Role ViewerRole => new Role(3, Roles.Viewer);

@@ -16,12 +16,18 @@ import { Typography } from '@mui/material';
 export default function Workspaces() {
 
   return (
-    <Container component="main" maxWidth='xl'>
-      <Box>
-        <Typography variant='h3' gutterBottom>
-          Workspaces
-        </Typography>
-      </Box>
+    <Container component="main" maxWidth='xl' sx={{ pt: 8, pb: 6,
+      bgcolor: 'background.default'}}> 
+      <Typography
+        component="h1"
+        variant="h2"
+        align="left"
+        color="text.primary"
+        gutterBottom
+      >
+        Workspaces
+      </Typography>
+      <Button variant='contained'>Create</Button>
     </Container>
   );
 }

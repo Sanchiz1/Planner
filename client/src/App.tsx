@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, CssBaseline, PaletteMode, ThemeProvider, createTheme } from '@mui/material';
 import React from 'react';
 import { Route, RouterProvider, Routes, createBrowserRouter, redirect } from 'react-router-dom';
 import Tasks from './Components/Tasks/Tasks';
@@ -6,6 +6,19 @@ import Login from './Components/Login/Login';
 import Header from './Components/Header/Header';
 import Home from './Components/Home/Home';
 import { IsLoggedIn } from './API/AuthAPI';
+import Workspaces from './Components/Workspaces/Workspaces';
+import { blue, grey } from '@mui/material/colors';
+
+const Theme = createTheme({
+  palette: {
+    primary: {
+      main: grey[900]
+    },
+    secondary: {
+      main: blue[800]
+    }
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -16,8 +29,8 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: "/Tasks",
-        element: <Tasks />,
+        path: "/Workspaces",
+        element: <Workspaces />,
         loader: async () => requireAuth()
       },
       {
@@ -28,14 +41,20 @@ const router = createBrowserRouter([
   }
 ])
 
+const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
+
 function App() {
+
   return (
-    <RouterProvider router={router} />
+    <ThemeProvider theme={Theme}>
+      <CssBaseline />
+      <RouterProvider router={router} />
+    </ThemeProvider>
   );
 }
 
 function requireAuth() {
-  if(!IsLoggedIn()){
+  if (!IsLoggedIn()) {
     return redirect("/Login");
   }
 

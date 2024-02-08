@@ -65,7 +65,8 @@ export default function Login() {
                         id="email"
                         label="Email Address"
                         name="email"
-                        autoComplete="email"
+                        autoComplete="none"
+                        color='secondary'
                         autoFocus
                     />
                     <TextField
@@ -76,7 +77,7 @@ export default function Login() {
                         label="Password"
                         type="password"
                         id="password"
-                        autoComplete="current-password"
+                        color='secondary'
                     />
                     <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
@@ -86,6 +87,7 @@ export default function Login() {
                         type="submit"
                         fullWidth
                         variant="contained"
+                        color='secondary'
                         sx={{ mt: 3, mb: 2 }}
                     >
                         Sign In
@@ -106,6 +108,7 @@ export default function Login() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        color='secondary'
                         startIcon={<Google />}
                         onClick={handleGoogleSubmit}
                     >

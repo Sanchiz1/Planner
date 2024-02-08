@@ -12,6 +12,11 @@ public class Membership : BaseEntity
 
     private Membership() { }
 
+    public bool IsMembershipOwner(int userId)
+    {
+        return UserId == userId;
+    }
+
     public static Membership CreateWorkspace(int userId, string workspaceName)
     {
         return new Membership()

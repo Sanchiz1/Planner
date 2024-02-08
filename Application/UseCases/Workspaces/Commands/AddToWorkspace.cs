@@ -31,7 +31,7 @@ public class AddToWorkspaceCommandHandler : IRequestHandler<AddToWorkspaceComman
         
         if (membership == null) return new Exception("Membership not found");
         
-        if (membership.RoleId != Role.OwnerRole.Id || membership.UserId != request.UserId) return new Exception("Permission denied");
+        if (!Role.IsOwner(membership.RoleId) || !membership.IsMembershipOwner(request.UserId)) return new Exception("Permission denied");
 
         var entity = Membership.AddToWorkspace(request.ToAddUserId, membership.Workspace, request.ToAddRoleId);
         

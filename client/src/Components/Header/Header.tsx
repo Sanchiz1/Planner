@@ -2,11 +2,17 @@ import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import { Outlet, useLocation, useNavigate, Link as RouterLink, ScrollRestoration } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { AppBar, Box } from '@mui/material';
+import { AppBar, Box, IconButton, Theme } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useTheme } from '@emotion/react';
+
 
 export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const theme = useTheme();
 
     return (
         <>
@@ -15,9 +21,9 @@ export default function Header() {
                     <Typography component={RouterLink} to='/' variant='h5' sx={{ mr: 'auto' }}>
                         Planner
                     </Typography>
-                    <Typography variant="button" component={RouterLink} to='/Tasks'
+                    <Typography variant="button" component={RouterLink} to='/Workspaces'
                         color="text.primary" sx={{ mr: 3 }}>
-                        Tasks
+                        Workspaces
                     </Typography>
                     <Typography variant="button" component={RouterLink} to='/Login'
                         color="text.primary">
