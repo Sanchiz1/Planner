@@ -1,10 +1,15 @@
-﻿using Application.Common.DTOs;
-using Application.Common.ViewModels;
+﻿using Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Application.Common.Interfaces;
 
 public interface IUserService
 {
-    Task<List<UserViewModel>> GetWorkspaceUsers(int workspaceId);
-    Task<UserDto> GetUserByEmail(string email);
+    Task<List<IApplicationUser>> GetWorkspaceUsers(int workSpaceId);
+    Task<IApplicationUser> GetUserByEmail(string email);
+    Task<IApplicationUser> GetUserById(int id);
 }

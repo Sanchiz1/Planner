@@ -15,7 +15,7 @@ public class UserConfiguration : IEntityTypeConfiguration<ApplicationUser>
     {
 
         builder
-            .HasMany<Membership>()
+            .HasMany(u => u.Memberships)
             .WithOne()
             .HasForeignKey(t => t.UserId);
     }

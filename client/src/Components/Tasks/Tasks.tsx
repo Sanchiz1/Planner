@@ -12,16 +12,25 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Typography } from '@mui/material';
+import { GetTasks } from '../../API/TasksAPI';
 
 export default function Tasks() {
 
   return (
-    <Container component="main" maxWidth='xl'>
-      <Box>
-        <Typography variant='h3' gutterBottom>
-          Welcome to Planner
-        </Typography>
-      </Box>
+    <Container component="main" maxWidth='xl' sx={{
+      pt: 8, pb: 6,
+      bgcolor: 'background.default'
+    }}>
+      <Typography
+        component="h1"
+        variant="h2"
+        align="left"
+        color="text.primary"
+        gutterBottom
+      >
+        Tasks
+      </Typography>
+      <Button variant='contained' onClick={GetTasks}>Get</Button>
     </Container>
   );
 }

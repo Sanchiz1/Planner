@@ -1,6 +1,9 @@
 ﻿using Application.Common.DTOs;
+using Application.Common.ViewModels;
+using Application.UseCases.Users.Queries;
 using Application.UseCases.Workspaces.Commands;
 using Application.UseCases.Workspaces.Queries;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Web.Extensions;
@@ -17,7 +20,41 @@ public class WorkspaceController : Controller
     {
         sender = _sender;
     }
-    
+
+    [HttpGet]
+    [Route("GetWorkspaces")]
+    public async Task<ActionResult<List<MembershipDto>>> GetWorkspaces()
+    {
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+
+        var result = await sender.Send(new GetWorkspacesQuery()
+        {
+            UserId = userId
+        });
+
+        return result.Match<ActionResult<List<MembershipDto>>>(
+            res => res,
+            ex => BadRequest(ex.Message)
+        );
+    }
+
+    [HttpGet]
+    [Route("GetWorkspaceMembers")]
+    public async Task<ActionResult<List<UserDto>>> GetWorkspaceMembers(int workspaceId)
+    {
+        var result = await sender.Send(new GetWorkspaceUsersQuery()
+        {
+            WorkspaceId = workspaceId
+        });
+
+        return result.Match<ActionResult<List<UserDto>>>(
+            res => res,
+            ex => BadRequest(ex.Message)
+        );
+    }
+
     [HttpPost]
     [Route("CreateWorkspace")]
     public async Task<ActionResult<int>> CreateWorkspace([FromBody]CreateWorkspaceDto request)
@@ -117,25 +154,6 @@ public class WorkspaceController : Controller
         });
 
         return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
-    }
-    
-    [HttpGet]
-    [Route("GetWorkspaces")]
-    public async Task<ActionResult<List<MembershipDto>>> GetWorkspaces()
-    {
-        var userId = User.GetUserId();
-
-        if (userId == 0) return Unauthorized();
-
-        var result = await sender.Send(new GetWorkspacesQuery()
-        {
-            UserId = userId
-        });
-
-        return result.Match<ActionResult<List<MembershipDto>>>(
             res => res,
             ex => BadRequest(ex.Message)
         );

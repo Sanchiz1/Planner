@@ -15,6 +15,10 @@ public class MembershipConfiguration : IEntityTypeConfiguration<Membership>
     {
         builder
             .HasKey(bc => bc.Id);
+        
+        builder
+            .Property(bc => bc.UserId)
+            .HasColumnName("UserId");
 
         builder
             .HasOne(bc => bc.Workspace)

@@ -1,4 +1,6 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Entities;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Identity;
+namespace Infrastructure.Services;
 
 public class IdentityService : IIdentityService
 {
@@ -69,6 +71,7 @@ public class IdentityService : IIdentityService
 
         return token;
     }
+
     public async Task<Result<string>> LoginExternalAsync(string userName, string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -92,11 +95,10 @@ public class IdentityService : IIdentityService
 
         return await LoginAsync(email);
     }
-    public async Task<string?> GetUserNameAsync(int userId)
-    {
-        var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
 
-        return user.UserName;
+    public async System.Threading.Tasks.Task LogoutAsync()
+    {
+        await _signInManager.SignOutAsync();
     }
 
     public async Task<bool> IsInRoleAsync(int userId, string role)
@@ -106,7 +108,7 @@ public class IdentityService : IIdentityService
         return user != null && await _userManager.IsInRoleAsync(user, role);
     }
 
-    public async Task DeleteUserAsync(int userId)
+    public async System.Threading.Tasks.Task DeleteUserAsync(int userId)
     {
         var user = _userManager.Users.SingleOrDefault(u => u.Id == userId);
 
@@ -114,8 +116,16 @@ public class IdentityService : IIdentityService
         await DeleteUserAsync(user);
     }
 
-    public async Task DeleteUserAsync(ApplicationUser applicationUser)
+    public async System.Threading.Tasks.Task DeleteUserAsync(ApplicationUser applicationUser)
     {
         var result = await _userManager.DeleteAsync(applicationUser);
+    }
+
+
+    public async Task<List<Membership>> GetUserMemberships(int userId)
+    {
+        var user = await _userManager.Users.Include(u => u.Memberships).FirstOrDefaultAsync(u => u.Id == userId);
+
+        return user.Memberships;
     }
 }

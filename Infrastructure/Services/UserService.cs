@@ -1,60 +1,38 @@
-﻿using Application.Common.DTOs;
-using Application.Common.Interfaces;
-using Application.Common.ViewModels;
+﻿using Application.Common.Interfaces;
 using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Services;
 
 public class UserService : IUserService
 {
-    private readonly IApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public UserService(IApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public UserService(
+        UserManager<ApplicationUser> userManager)
     {
-        _context = context;
         _userManager = userManager;
     }
-    
-    public async Task<List<UserViewModel>> GetWorkspaceUsers(int workspaceId)
+
+    public async Task<List<IApplicationUser>> GetWorkspaceUsers(int workSpaceId)
     {
-        return await _context.Memberships
-            .Where(m => m.WorkspaceId == workspaceId)
-            .Select(m =>
-                new UserViewModel()
-                {
-                    User = _userManager.Users
-                        .Where(u => u.Id == m.UserId)
-                        .Select(u =>
-                            new UserDto()
-                            {
-                                UserId = u.Id,
-                                Email = u.Email,
-                                DisplayName = u.DisplayName
-                            }).First(),
-                    Membership = new MembershipDto()
-                    {
-                        UserId = m.UserId,
-                        WorkspaceId = m.WorkspaceId,
-                        RoleId = m.RoleId
-                    }
-                }).ToListAsync();
+        return await _userManager.Users.Where(u => u.Memberships.Any(m => m.WorkspaceId == workSpaceId)).ToListAsync<IApplicationUser>();
     }
 
-    public async Task<UserDto> GetUserByEmail(string email)
+    public async Task<IApplicationUser> GetUserByEmail(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        return await _userManager.FindByEmailAsync(email);
+    }
 
-        if (user == null) return null;
-
-        return new UserDto()
-        {
-            UserId = user.Id,
-            Email = user.Email,
-            DisplayName = user.DisplayName
-        };
+    public async Task<IApplicationUser> GetUserById(int id)
+    {
+        return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
 }

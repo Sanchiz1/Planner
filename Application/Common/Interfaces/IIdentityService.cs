@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Domain.Entities;
+using Shared;
 
 namespace Application.Common.Interfaces;
 
@@ -8,7 +9,6 @@ public interface IIdentityService
     Task<Result<string>> LoginAsync(string email);
     Task<Result<string>> LoginPasswordAsync(string email, string password);
     Task<Result<string>> LoginExternalAsync(string userName, string email);
-    Task<string?> GetUserNameAsync(int userId);
     Task<bool> IsInRoleAsync(int userId, string role);
-    Task DeleteUserAsync(int userId);
+    System.Threading.Tasks.Task DeleteUserAsync(int userId);
 }

@@ -31,7 +31,11 @@ const router = createBrowserRouter([
       {
         path: "/Workspaces",
         element: <Workspaces />,
-        loader: async () => requireAuth()
+        //loader: async () => requireAuth()
+      },
+      {
+        path: "/Tasks",
+        element: <Tasks />,
       },
       {
         path: "/Login",

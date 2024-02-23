@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Identity;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,7 @@ public static class DependencyInjection
 
         services.AddSingleton<TokenService>();
         services.AddTransient<IIdentityService, IdentityService>();
+        services.AddTransient<IUserService, UserService>();
 
         return services;
     }
