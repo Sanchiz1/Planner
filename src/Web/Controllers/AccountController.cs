@@ -44,18 +44,6 @@ public class AccountController : Controller
             );
     }
 
-    [HttpPost]
-    [Route("Logout")]
-    public async Task<ActionResult<string>> Logout()
-    {
-        var result = await _identityService.LoginPasswordAsync(request.Email, request.Password);
-
-        return result.Match<ActionResult<string>>(
-            res => Ok(res),
-            ex => BadRequest(ex.Message)
-            );
-    }
-
     [HttpGet]
     [Route("google-login")]
     public ActionResult GoogleLogin()
