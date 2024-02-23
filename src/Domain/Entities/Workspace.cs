@@ -19,6 +19,30 @@ public class Workspace : BaseEntity
 
     public void UpdateWorkspace(string name)
     {
-        this.Name = Name;
+        this.Name = name;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null) return false;
+
+        if (obj.GetType() != this.GetType()) return false;
+
+        return this.Equals((Workspace)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode() + this.Name.GetHashCode();
+    }
+
+    public bool Equals(Workspace other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        return this.Id.Equals(other.Id) && this.Name.Equals(other.Id);
     }
 }

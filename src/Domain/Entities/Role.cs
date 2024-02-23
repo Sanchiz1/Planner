@@ -21,10 +21,35 @@ public class Role : BaseEntity
         Name = name;
     }
 
-    public static bool IsOwner(int roleId) => OwnerRole.Id == roleId;
-    public static bool IsMember(int roleId) => MemberRole.Id == roleId;
-    public static bool IsViewer(int roleId) => ViewerRole.Id == roleId;
+    public override bool Equals(object obj)
+    {
+        if (obj == null) return false;
+
+        if (obj.GetType() != this.GetType()) return false;
+
+        return this.Equals((Role)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return this.Id.GetHashCode() + this.Name.GetHashCode();
+    }
+
+    public bool Equals(Role other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        return this.Id.Equals(other.Id) && this.Name.Equals(other.Id);
+    }
+
     public static Role OwnerRole => new Role(1, Roles.Owner);
     public static Role MemberRole => new Role(2, Roles.Member);
     public static Role ViewerRole => new Role(3, Roles.Viewer);
+
+    public static bool IsOwner(int roleId) => OwnerRole.Id == roleId;
+    public static bool IsMember(int roleId) => MemberRole.Id == roleId;
+    public static bool IsViewer(int roleId) => ViewerRole.Id == roleId;
 }

@@ -23,7 +23,8 @@ public class Membership : BaseEntity
         {
             UserId = userId,
             Workspace = new Workspace(workspaceName),
-            RoleId = Role.OwnerRole.Id
+            RoleId = Role.OwnerRole.Id,
+            Role = Role.OwnerRole
         };
     }
     
