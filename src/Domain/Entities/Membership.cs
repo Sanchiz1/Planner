@@ -17,14 +17,13 @@ public class Membership : BaseEntity
         return UserId == userId;
     }
 
-    public static Membership CreateWorkspace(int userId, string workspaceName)
+    public static Membership CreateWorkspace(int userId, string workspaceName, bool isPublic)
     {
         return new Membership()
         {
             UserId = userId,
-            Workspace = new Workspace(workspaceName),
-            RoleId = Role.OwnerRole.Id,
-            Role = Role.OwnerRole
+            Workspace = new Workspace(workspaceName, isPublic),
+            RoleId = Role.OwnerRole.Id
         };
     }
     

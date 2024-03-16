@@ -49,7 +49,7 @@ public class Role : BaseEntity
     public static Role MemberRole => new Role(2, Roles.Member);
     public static Role ViewerRole => new Role(3, Roles.Viewer);
 
-    public static bool IsOwner(int roleId) => OwnerRole.Id == roleId;
-    public static bool IsMember(int roleId) => MemberRole.Id == roleId;
-    public static bool IsViewer(int roleId) => ViewerRole.Id == roleId;
+    public static bool IsOwnerRole(int roleId) => OwnerRole.Id == roleId;
+    public static bool IsMemberRole(int roleId) => MemberRole.Id == roleId;
+    public static bool IsViewerRole(int roleId) => ViewerRole.Id == roleId;
 }

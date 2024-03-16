@@ -8,11 +8,11 @@ using Shared;
 
 namespace Application.UseCases.Workspaces.Queries;
 
-public record GetWorkspacesQuery : IRequest<Result<List<MembershipDto>>>
+public record GetWorkspacesQuery : IRequest<Result<List<WorkspaceDto>>>
 {
     public required int UserId { get; init; }
 }
-public class GetWorkspacesQueryHandler : IRequestHandler<GetWorkspacesQuery, Result<List<MembershipDto>>>
+public class GetWorkspacesQueryHandler : IRequestHandler<GetWorkspacesQuery, Result<List<WorkspaceDto>>>
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -23,14 +23,14 @@ public class GetWorkspacesQueryHandler : IRequestHandler<GetWorkspacesQuery, Res
         _mapper = mapper;
     }
 
-    public async Task<Result<List<MembershipDto>>> Handle(GetWorkspacesQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<WorkspaceDto>>> Handle(GetWorkspacesQuery request, CancellationToken cancellationToken)
     {
         return await _context.Memberships
             .AsNoTracking()
             .Where(m => m.UserId == request.UserId)
-            .Include(m => m.Workspace)
-            .OrderBy(membership => membership.Workspace.Name)
-            .ProjectTo<MembershipDto>(_mapper.ConfigurationProvider)
+            .Select(m => m.Workspace)
+            .OrderBy(w => w.Name)
+            .ProjectTo<WorkspaceDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
     }
 }

@@ -22,7 +22,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [Route("Register")]
-    public async Task<ActionResult<string>> Register([FromBody]RegisterDto request)
+    public async Task<ActionResult<string>> Register([FromBody] RegisterDto request)
     {
         var result = await _identityService.RegisterAsync(request.UserName, request.Email, request.Password);
 
@@ -34,7 +34,7 @@ public class AccountController : Controller
 
     [HttpPost]
     [Route("Login")]
-    public async Task<ActionResult<string>> Login([FromBody]LoginDto request)
+    public async Task<ActionResult<string>> Login([FromBody] LoginDto request)
     {
         var result = await _identityService.LoginPasswordAsync(request.Email, request.Password);
 
@@ -45,7 +45,7 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    [Route("google-login")]
+    [Route("GoogleLogin")]
     public ActionResult GoogleLogin()
     {
         var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
@@ -54,7 +54,7 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    [Route("google-response")]
+    [Route("googleResponse")]
     public async Task<ActionResult> GoogleResponse()
     {
         var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace Application.UseCases.Workspaces.Commands;
 public record DeleteWorkspaceCommand : IRequest<Result<string>>
 {
     public int UserId { get; init; }
-    public int MembershipId { get; init; }
+    public int WorkspaceId { get; init; }
 }
 
 public class DeleteWorkspaceCommandHandler : IRequestHandler<DeleteWorkspaceCommand, Result<string>>
@@ -23,15 +24,17 @@ public class DeleteWorkspaceCommandHandler : IRequestHandler<DeleteWorkspaceComm
 
     public async Task<Result<string>> Handle(DeleteWorkspaceCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Memberships
-            .Include(membership => membership.Workspace)
-            .FirstOrDefaultAsync(membership => membership.Id == request.MembershipId, cancellationToken);
-        
-        if (entity == null) return new Exception("Membership not found");
-        
-        if (entity.RoleId != Role.OwnerRole.Id || entity.UserId != request.UserId) return new Exception("Permission denied");
-        
-        _context.Workspaces.Remove(entity.Workspace);
+        var membership = await _context.Memberships
+            .Include(m => m.Workspace)
+            .FirstOrDefaultAsync(m => m.UserId == request.UserId && m.WorkspaceId == request.WorkspaceId, cancellationToken);
+
+        if (membership is null)
+            return new NotFoundException("Not a workspace member");
+
+        if (!Role.IsOwnerRole(membership.RoleId))
+            return new PermissionDeniedException("Only Owner can delete workspace");
+
+        _context.Workspaces.Remove(membership.Workspace);
 
         await _context.SaveChangesAsync(cancellationToken);
 

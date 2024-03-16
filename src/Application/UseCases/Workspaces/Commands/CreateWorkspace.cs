@@ -9,6 +9,7 @@ public record CreateWorkspaceCommand : IRequest<Result<int>>
 {
     public int UserId { get; init; }
     public required string WorkspaceName { get; init; }
+    public required bool WorkspaceIsPublic { get; init; }
 }
 
 public class CreateWorkspaceCommandHandler : IRequestHandler<CreateWorkspaceCommand, Result<int>>
@@ -22,9 +23,9 @@ public class CreateWorkspaceCommandHandler : IRequestHandler<CreateWorkspaceComm
 
     public async Task<Result<int>> Handle(CreateWorkspaceCommand request, CancellationToken cancellationToken)
     {
-        var entity = Membership.CreateWorkspace(request.UserId, request.WorkspaceName);
+        var entity = Membership.CreateWorkspace(request.UserId, request.WorkspaceName, request.WorkspaceIsPublic);
 
-        _context.Memberships.Add(entity);
+        await _context.Memberships.AddAsync(entity);
 
         await _context.SaveChangesAsync(cancellationToken);
 

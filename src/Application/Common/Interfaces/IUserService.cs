@@ -1,15 +1,10 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Common.Models;
 
 namespace Application.Common.Interfaces;
 
 public interface IUserService
 {
-    Task<List<IApplicationUser>> GetWorkspaceUsers(int workSpaceId);
+    Task<List<UserMembership>> GetWorkspaceUsers(int workSpaceId);
     Task<IApplicationUser> GetUserByEmail(string email);
     Task<IApplicationUser> GetUserById(int id);
 }

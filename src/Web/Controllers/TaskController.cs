@@ -22,13 +22,13 @@ public class TaskController : Controller
 
     [HttpGet]
     [Route("Tasks")]
-    public async Task<ActionResult<List<TaskDto>>> GetTasks()
+    public async Task<ActionResult<List<TaskDto>>> GetTasks(int WorkspaceId)
     {
         var userId = User.GetUserId();
 
         if (userId == 0) return Unauthorized();
         
-        var result = await sender.Send(new GetTasksQuery() { UserId = userId });
+        var result = await sender.Send(new GetWorkspaceTasksQuery() { UserId = userId, WorkspaceId = WorkspaceId });
 
         return result.Match<ActionResult<List<TaskDto>>>(
             res => res,

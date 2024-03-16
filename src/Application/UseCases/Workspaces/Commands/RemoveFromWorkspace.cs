@@ -27,17 +27,17 @@ public class RemoveFromWorkspaceCommandHandler : IRequestHandler<RemoveFromWorks
         var membership = await _context.Memberships
             .FirstOrDefaultAsync(m => m.Id == request.MembershipId, cancellationToken);
         
-        if (membership == null) return new Exception("Membership not found");
+        if (membership is null) return new Exception("Membership not found");
         
-        if((request.MembershipId != request.ToRemoveMembershipId && !Role.IsOwner(membership.RoleId)) 
+        if((request.MembershipId != request.ToRemoveMembershipId && !Role.IsOwnerRole(membership.RoleId)) 
            || !membership.IsMembershipOwner(request.UserId)) return new Exception("Permission denied");
 
         var toRemoveMembership = await _context.Memberships
             .FirstOrDefaultAsync(m => m.Id == request.ToRemoveMembershipId, cancellationToken);
         
-        if (toRemoveMembership == null) return new Exception("Membership not found");
+        if (toRemoveMembership is null) return new Exception("Membership not found");
         
-        if (!Role.IsOwner(toRemoveMembership.RoleId)) return new Exception("Cannot remove owner");
+        if (!Role.IsOwnerRole(toRemoveMembership.RoleId)) return new Exception("Cannot remove owner");
         
         _context.Memberships.Remove(toRemoveMembership);
 

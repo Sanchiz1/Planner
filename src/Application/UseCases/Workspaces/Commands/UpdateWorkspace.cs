@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +10,9 @@ namespace Application.UseCases.Workspaces.Commands;
 public record UpdateWorkspaceCommand : IRequest<Result<int>>
 {
     public int UserId { get; init; }
-    public int MembershipId { get; init; }
+    public int WorkspaceId { get; init; }
     public required string WorkspaceName { get; init; }
+    public required bool WorkspaceIsPublic { get; init; }
 }
 
 public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceCommand, Result<int>>
@@ -26,13 +28,14 @@ public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceComm
     {
         var entity = await _context.Memberships
             .Include(membership => membership.Workspace)
-            .FirstOrDefaultAsync(membership => membership.Id == request.MembershipId, cancellationToken);
+            .FirstOrDefaultAsync(membership => membership.UserId == request.UserId && membership.WorkspaceId == request.WorkspaceId, cancellationToken);
         
-        if (entity == null) return new Exception("Membership not found");
+        if (entity is null)
+            return new NotFoundException("Not a member of the workspace");
         
-        if (entity.RoleId != Role.OwnerRole.Id || entity.UserId != request.UserId) return new Exception("Permission denied");
+        if (!Role.IsOwnerRole(entity.RoleId)) return new PermissionDeniedException("Only Owner can edit workspace");
 
-        entity.Workspace.UpdateWorkspace(request.WorkspaceName);
+        entity.Workspace.UpdateWorkspace(request.WorkspaceName, request.WorkspaceIsPublic);
         
         _context.Memberships.Update(entity);
 

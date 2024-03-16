@@ -10,16 +10,19 @@ namespace Domain.Entities;
 public class Workspace : BaseEntity
 {
     public string Name { get; private set; }
+    public bool IsPublic { get; private set; }
     public List<Task> Tasks { get; private set; }
-    public Workspace(string name)
+    public Workspace(string name, bool isPublic)
     {
         Name = name;
         Tasks = new List<Task>();
+        IsPublic = isPublic;
     }
 
-    public void UpdateWorkspace(string name)
+    public void UpdateWorkspace(string name, bool isPublic)
     {
         this.Name = name;
+        this.IsPublic = isPublic;
     }
 
     public override bool Equals(object obj)
@@ -43,6 +46,6 @@ public class Workspace : BaseEntity
             return false;
         }
 
-        return this.Id.Equals(other.Id) && this.Name.Equals(other.Id);
+        return this.Id.Equals(other.Id) && this.Name.Equals(other.Id) && this.IsPublic.Equals(other.IsPublic);
     }
 }

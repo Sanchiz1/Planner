@@ -14,7 +14,9 @@ public class MembershipConfiguration : IEntityTypeConfiguration<Membership>
     public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Membership> builder)
     {
         builder
-            .HasKey(bc => bc.Id);
+            .HasKey(bc => new { bc.Id });
+
+        builder.HasIndex(bc => new { bc.WorkspaceId, bc.UserId }).IsUnique();
         
         builder
             .Property(bc => bc.UserId)

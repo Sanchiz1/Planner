@@ -1,16 +1,19 @@
 ﻿using Application.Common.DTOs;
+using Application.Common.Exceptions;
 using Application.Common.ViewModels;
 using Application.UseCases.Users.Queries;
 using Application.UseCases.Workspaces.Commands;
 using Application.UseCases.Workspaces.Queries;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Extensions;
 using Web.Models.Workspace;
 
 namespace Web.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class WorkspaceController : Controller
@@ -23,7 +26,7 @@ public class WorkspaceController : Controller
 
     [HttpGet]
     [Route("GetWorkspaces")]
-    public async Task<ActionResult<List<MembershipDto>>> GetWorkspaces()
+    public async Task<ActionResult<List<WorkspaceDto>>> GetWorkspaces()
     {
         var userId = User.GetUserId();
 
@@ -34,7 +37,7 @@ public class WorkspaceController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<List<MembershipDto>>>(
+        return result.Match<ActionResult<List<WorkspaceDto>>>(
             res => res,
             ex => BadRequest(ex.Message)
         );
@@ -42,14 +45,19 @@ public class WorkspaceController : Controller
 
     [HttpGet]
     [Route("GetWorkspaceMembers")]
-    public async Task<ActionResult<List<UserDto>>> GetWorkspaceMembers(int workspaceId)
+    public async Task<ActionResult<List<UserMembershipDto>>> GetWorkspaceMembers(int workspaceId)
     {
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+
         var result = await sender.Send(new GetWorkspaceUsersQuery()
         {
-            WorkspaceId = workspaceId
+            WorkspaceId = workspaceId,
+            UserId = userId
         });
 
-        return result.Match<ActionResult<List<UserDto>>>(
+        return result.Match<ActionResult<List<UserMembershipDto>>>(
             res => res,
             ex => BadRequest(ex.Message)
         );
@@ -66,7 +74,8 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new CreateWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceName = request.WorkspaceName
+            WorkspaceName = request.WorkspaceName,
+            WorkspaceIsPublic = request.WorkspaceIsPublic
         });
 
         return result.Match<ActionResult<int>>(
@@ -86,8 +95,9 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new UpdateWorkspaceCommand()
         {
             UserId = userId,
-            MembershipId = request.MembershipId,
-            WorkspaceName = request.WorkspaceName
+            WorkspaceId = request.WorkspaceId,
+            WorkspaceName = request.WorkspaceName,
+            WorkspaceIsPublic = request.WorkspaceIsPublic
         });
 
         return result.Match<ActionResult<int>>(
@@ -127,7 +137,7 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new AddToWorkspaceCommand()
         {
             UserId = userId,
-            MembershipId = request.MembershipId,
+            WorkspaceId = request.MembershipId,
             ToAddUserId = request.ToAddUserId,
             ToAddRoleId = request.ToAddRoleId
         });
