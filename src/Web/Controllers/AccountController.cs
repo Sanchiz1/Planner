@@ -69,9 +69,19 @@ public class AccountController : Controller
         return loginResult.Match<ActionResult>(
             res =>
             {
-                HttpContext.Response.Cookies.Append("accessToken", res, new CookieOptions { IsEssential = true });
+                int durationInMinutes = int.Parse(_configuraion["JwtSettings:DurationInMinutes"]);
 
                 string url = _configuraion["JwtSettings:Audience"];
+
+                HttpContext.Response.Cookies.Append(
+                    "accessToken",
+                    res,
+                    new CookieOptions
+                    {
+                        IsEssential = true,
+                        Expires = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds() + durationInMinutes * 60)
+                    }
+                    );
 
                 return Redirect(url);
             },
