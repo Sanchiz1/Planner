@@ -2,5 +2,5 @@
 
 public class DeleteWorkspaceDto
 {
-    public int MembershipId { get; set; }
+    public int WorkspaceId { get; set; }
 }

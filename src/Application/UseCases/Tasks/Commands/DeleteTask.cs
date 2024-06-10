@@ -7,26 +7,22 @@ using Shared;
 
 namespace Application.UseCases.Tasks.Commands;
 
-public class UpdateTaskCommand : IRequest<Result<int>>
+public class DeleteTaskCommand : IRequest<Result<bool>>
 {
     public int Id { get; init; }
-    public required string Title { get; init; }
-    public string Description { get; init; } = string.Empty;
-    public DateTime? StartDate { get; init; }
-    public DateTime EndDate { get; init; }
     public int UserId { get; init; }
 }
 
-public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Result<int>>
+public class DeleteTaskCommandHandler : IRequestHandler<DeleteTaskCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _context;
 
-    public UpdateTaskCommandHandler(IApplicationDbContext context)
+    public DeleteTaskCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<Result<int>> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
+    public async Task<Result<bool>> Handle(DeleteTaskCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Tasks.FindAsync(request.Id);
 
@@ -39,17 +35,12 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Resul
             return new NotFoundException("Not a workspace member");
 
         if (Role.IsViewerRole(membership.RoleId))
-            return new PermissionDeniedException("Only workspace Owner or Member can update tasks");
+            return new PermissionDeniedException("Only workspace Owner or Member can delete tasks");
 
-        entity.UpdateTask(request.Title,
-            request.Description,
-            request.StartDate,
-            request.EndDate);
-
-        _context.Tasks.Update(entity);
+        _context.Tasks.Remove(entity);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity.Id;
+        return true;
     }
 }

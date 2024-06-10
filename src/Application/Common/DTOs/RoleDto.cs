@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Common.DTOs;
-
-public class TagDto
+public class RoleDto
 {
     public int Id { get; set; }
-    public required string Title { get; set; }
+    public required string Name { get;  set; }
 }

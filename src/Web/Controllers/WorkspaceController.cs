@@ -117,7 +117,7 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new DeleteWorkspaceCommand()
         {
             UserId = userId,
-            MembershipId = request.MembershipId
+            WorkspaceId = request.WorkspaceId
         });
 
         return result.Match<ActionResult<string>>(
