@@ -1,74 +1,11 @@
-import { Box, CssBaseline, PaletteMode, ThemeProvider, createTheme, useMediaQuery } from '@mui/material';
-import React from 'react';
-import { Route, RouterProvider, Routes, createBrowserRouter, redirect } from 'react-router-dom';
-import Tasks from './Components/Tasks/Tasks';
-import Login from './Components/Login/Login';
-import Header from './Components/Header/Header';
-import Home from './Components/Home/Home';
-import { IsLoggedIn } from './API/AuthAPI';
-import Workspaces from './Components/Workspaces/Workspaces';
+import { CssBaseline, ThemeProvider, createTheme, useMediaQuery } from '@mui/material';
 import { blue, grey } from '@mui/material/colors';
-import { useTheme } from '@emotion/react';
-
-const Theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: grey[900]
-    },
-    secondary: {
-      main: blue[800]
-    }
-  },
-});
-
-const getDesignTokens = (mode: PaletteMode) => ({
-  palette: {
-    mode,
-    ...(mode === 'light'
-      ? {
-        primary: {
-          main: grey[900]
-        },
-        secondary: {
-          main: blue[700]
-        }
-      }
-      : {
-        primary: {
-          main: grey[900]
-        },
-        secondary: {
-          main: blue[700]
-        }
-      }),
-  },
-});
-
-const router = createBrowserRouter([
-  {
-    element: <Header />,
-    children: [
-      {
-        path: "/",
-        element: <Home />
-      },
-      {
-        path: "/Workspaces",
-        element: <Workspaces />,
-        //loader: async () => requireAuth()
-      },
-      {
-        path: "/Tasks",
-        element: <Tasks />,
-      },
-      {
-        path: "/Login",
-        element: <Login />,
-      }
-    ]
-  }
-])
+import React from 'react';
+import { Provider } from 'react-redux';
+import Content from './Content';
+import { store } from './store';
+import { SnackbarProvider } from 'notistack';
+;
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -102,19 +39,15 @@ function App() {
   );
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <SnackbarProvider>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Content />
+        </ThemeProvider>
+      </Provider>
+    </SnackbarProvider>
   );
-}
-
-function requireAuth() {
-  if (!IsLoggedIn()) {
-    return redirect("/Login");
-  }
-
-  return null;
 }
 
 export default App;

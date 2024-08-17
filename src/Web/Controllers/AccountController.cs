@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +35,11 @@ public class AccountController : Controller
 
     [HttpPost]
     [Route("Login")]
-    public async Task<ActionResult<string>> Login([FromBody] LoginDto request)
+    public async Task<ActionResult<Token>> Login([FromBody] LoginDto request)
     {
         var result = await _identityService.LoginPasswordAsync(request.Email, request.Password);
 
-        return result.Match<ActionResult<string>>(
+        return result.Match<ActionResult<Token>>(
             res => Ok(res),
             ex => BadRequest(ex.Message)
             );
@@ -69,17 +70,15 @@ public class AccountController : Controller
         return loginResult.Match<ActionResult>(
             res =>
             {
-                int durationInMinutes = int.Parse(_configuraion["JwtSettings:DurationInMinutes"]);
-
                 string url = _configuraion["JwtSettings:Audience"];
 
                 HttpContext.Response.Cookies.Append(
                     "accessToken",
-                    res,
+                    res.Value,
                     new CookieOptions
                     {
                         IsEssential = true,
-                        Expires = DateTimeOffset.FromUnixTimeSeconds(DateTimeOffset.UtcNow.ToUnixTimeSeconds() + durationInMinutes * 60)
+                        Expires = res.Expires
                     }
                     );
 

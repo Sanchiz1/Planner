@@ -1,18 +1,22 @@
-import React from 'react';
+import { AppBar, Box } from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
-import { Outlet, useLocation, useNavigate, Link as RouterLink, ScrollRestoration } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { AppBar, Box, IconButton, Theme } from '@mui/material';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useTheme } from '@emotion/react';
+import { useEffect } from 'react';
+import { Outlet, Link as RouterLink, ScrollRestoration, useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { getUser } from '../../features/account/accountSlice';
 
 
 export default function Header() {
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useAppDispatch();
 
-    const theme = useTheme();
+    const user = useAppSelector(store => store.account.user);
+
+    useEffect(() => {
+        dispatch(getUser());
+    }, [])
 
     return (
         <>
@@ -27,10 +31,17 @@ export default function Header() {
                             WORKSPACES
                         </Typography>
                     </Box>
-                    <Typography variant="button" component={RouterLink} to='/Login'
-                        color="text.primary">
-                        Login
-                    </Typography>
+                    {user ?
+
+                        <Typography variant="button" component={RouterLink} to='/Account'
+                            color="text.primary">
+                            {user.displayName}
+                        </Typography> :
+                        <Typography variant="button" component={RouterLink} to='/Login'
+                            color="text.primary">
+                            Login
+                        </Typography>
+                    }
                 </Toolbar>
             </AppBar>
             <Outlet />

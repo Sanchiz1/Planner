@@ -1,17 +1,19 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { Google } from '@mui/icons-material';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShowFailure } from '../../Helpers/SnackBarHelper';
+import { login } from '../../features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { getUser } from '../../features/account/accountSlice';
 
 function Copyright(props: any) {
     return (
@@ -27,21 +29,33 @@ function Copyright(props: any) {
 }
 
 export default function Login() {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { error, success } = useAppSelector(state => state.auth);
+
     const handleGoogleSubmit = () => {
         window.location.href = "https://localhost:7269/Account/googlelogin";
     }
 
+    useEffect(() => {
+        if (success) {
+            navigate("/");
+            dispatch(getUser());
+        }
+        if (error) ShowFailure(error);
+    }, [success])
+
     const handleLoginSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
+        dispatch(login({
+            email: data.get('email')?.toString()!,
+            password: data.get('password')?.toString()!,
+        }));
     };
 
     return (
-        <Container  component="main" maxWidth='xs' sx={{ pt: 8, pb: 6 }}
+        <Container component="main" maxWidth='xs' sx={{ pt: 8 }}
         >
             <Box
                 sx={{
@@ -79,10 +93,6 @@ export default function Login() {
                         id="password"
                         color='secondary'
                     />
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="primary" />}
-                        label="Remember me"
-                    />
                     <Button
                         type="submit"
                         fullWidth
@@ -116,7 +126,7 @@ export default function Login() {
                     </Button>
                 </Box>
             </Box>
-            <Copyright sx={{ mt: 8, mb: 4 }} />
+            <Copyright sx={{ mt: 8 }} />
         </Container>
     );
 }

@@ -1,4 +1,5 @@
-﻿using Infrastructure.Identity;
+﻿using Application.Common.Models;
+using Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -20,26 +21,37 @@ public class TokenService
         _configuration = configuration;
     }
 
-    public string GenerateToken(ApplicationUser applicationUser)
+    public Token GenerateToken(ApplicationUser applicationUser)
     {
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, applicationUser.DisplayName),
-            new Claim(ClaimTypes.NameIdentifier, applicationUser.Id.ToString()),
+            new Claim("Email", applicationUser.Email!),
+            new Claim("DisplayName", applicationUser.DisplayName),
+            new Claim("Id", applicationUser.Id.ToString()),
         };
+
+        
+        DateTime Issued = DateTime.UtcNow;
+        DateTime Expires = Issued.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:DurationInMinutes"]));
 
         var token = new JwtSecurityToken(
             _configuration["JwtSettings:Issuer"],
             _configuration["JwtSettings:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JwtSettings:DurationInMinutes"])),
+            notBefore: Issued,
+            expires: Expires,
             signingCredentials: credentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        string value = new JwtSecurityTokenHandler().WriteToken(token);
+        return new Token()
+        {
+            Value = value,
+            Issued = Issued,
+            Expires = Expires,
+        };
     }
-
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.Models;
 using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,8 @@ public class IdentityService : IIdentityService
 
         return "Registered successfully";
     }
-    public async Task<Result<string>> LoginAsync(string email)
+
+    public async Task<Result<Token>> LoginAsync(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
@@ -57,7 +59,7 @@ public class IdentityService : IIdentityService
 
         return token;
     }
-    public async Task<Result<string>> LoginPasswordAsync(string email, string password)
+    public async Task<Result<Token>> LoginPasswordAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
@@ -72,7 +74,7 @@ public class IdentityService : IIdentityService
         return token;
     }
 
-    public async Task<Result<string>> LoginExternalAsync(string userName, string email)
+    public async Task<Result<Token>> LoginExternalAsync(string userName, string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
 

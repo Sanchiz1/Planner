@@ -29,7 +29,7 @@ public class UserController : Controller
 
         return result.Match<ActionResult<UserDto>>(
             res => res,
-            ex => BadRequest(ex.Message)
+            ex => BadRequest(ex)
         );
     }
 }
