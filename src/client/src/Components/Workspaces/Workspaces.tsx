@@ -2,24 +2,23 @@ import { Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import { Workspace } from '../../Types/Workspace';
-import WorkspaceElement from './WorkspaceElement';
+import { useEffect } from 'react';
+import { getMyWorkspaces } from '../../features/myWorkspaces/myWorkspacesSlice';
+import { ShowFailure } from '../../Helpers/SnackBarHelper';
+import { useAppDispatch, useAppSelector } from '../../store';
+import MemershipWorkspaceElementProps from './MemershipWorkspaceElement';
 
 export default function Workspaces() {
-  const workspaces: Workspace[] = [
-    {
-      id: 1,
-      title: "New workspace"
-    },
-    {
-      id: 1,
-      title: "New workspace"
-    },
-    {
-      id: 1,
-      title: "New workspace"
-    }
-  ]
+  const dispatch = useAppDispatch();
+  const { error, success, memerships } = useAppSelector(state => state.myWorkspaces);
+
+  useEffect(() => {
+    dispatch(getMyWorkspaces())
+  }, []);
+
+  useEffect(() => {
+    if (error) ShowFailure(error);
+  }, [success]);
 
   return (
     <Container component="main" maxWidth='xl' sx={{
@@ -42,8 +41,9 @@ export default function Workspaces() {
         flexWrap: "wrap"
       }}>
         {
-          workspaces.map(w =>
-            <WorkspaceElement workspace={w} key={w.id}></WorkspaceElement>
+          memerships &&
+          memerships.map(m =>
+            <MemershipWorkspaceElementProps membership={m} key={m.id}></MemershipWorkspaceElementProps>
           )
         }
       </Box>

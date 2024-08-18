@@ -19,8 +19,8 @@ public class WorkspaceController : BaseApiController
     }
 
     [HttpGet]
-    [Route("GetWorkspaces")]
-    public async Task<ActionResult<List<WorkspaceDto>>> GetWorkspaces()
+    [Route("Member")]
+    public async Task<ActionResult<List<MembershipDto>>> GetMemberWorkspaces()
     {
         var userId = User.GetUserId();
 
@@ -35,7 +35,7 @@ public class WorkspaceController : BaseApiController
     }
 
     [HttpGet]
-    [Route("GetWorkspaceMembers")]
+    [Route("{workspaceId}/Members")]
     public async Task<ActionResult<List<UserMembershipDto>>> GetWorkspaceMembers(int workspaceId)
     {
         var userId = User.GetUserId();

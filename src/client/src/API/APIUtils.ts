@@ -37,16 +37,16 @@ export function GetAjaxObservable<T>(requestUrl: string,
             res.response
         ),
         catchError((error) => {
-            if (error?.response?.error == null || error.status == 500) {
-                throw new Error("Internal error")
-            }
-
             if (error.status == 401) {
                 throw new Error("Unauthorized")
             }
 
             if (error.status == 404) {
                 throw new NotFoundError(error.response.error);
+            }
+
+            if (error?.response?.error == null || error.status == 500) {
+                throw new Error("Internal error")
             }
 
             throw new Error(error.response.error);

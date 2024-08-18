@@ -16,7 +16,7 @@ export default function WorkspaceElement(props: WorkspaceElementProps) {
             <CardActionArea>
                 <CardContent>
                     <Typography variant="h5" component="div">
-                        {props.workspace.title}
+                        {props.workspace.name}
                     </Typography>
                 </CardContent>
             </CardActionArea>

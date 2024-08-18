@@ -11,6 +11,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<IApplicationUser, UserDto>();
+        CreateMap<Role, RoleDto>();
         CreateMap<Membership, MembershipDto>();
         CreateMap<UserMembership, UserMembershipDto>();
         CreateMap<Workspace, WorkspaceDto>();
