@@ -6,7 +6,8 @@ import Tasks from './Components/Tasks/Tasks';
 import MyWorkspacesPage from './Components/Workspaces/MyWorkspaces/MyWorkspacesPage';
 import { IsLoggedIn } from './Helpers/LoggedInHelper';
 import AccountPage from './Components/Account/AccountPage';
-import WorkspacePage from './Components/Workspaces/Workspace/WorkspacesPage';
+import WorkspacePage from './Components/Workspaces/Workspace/WorkspacePage';
+import WorkspaceMembersPage from './Components/Workspaces/WorkspaceMembers/WorkspaceMembersPage';
 
 function Content() {
   const router = createBrowserRouter([
@@ -25,6 +26,10 @@ function Content() {
         {
           path: "/workspaces/:workspaceId",
           element: <WorkspacePage />
+        },
+        {
+          path: "/workspaces/:workspaceId/members",
+          element: <WorkspaceMembersPage />
         },
         {
           path: "/account",

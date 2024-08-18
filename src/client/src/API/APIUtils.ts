@@ -40,13 +40,13 @@ export function GetAjaxObservable<T>(requestUrl: string,
             const apiError: ApiErrorType = error?.response;
 
             if (error && error.status == 401) {
-                throw new Error(apiError.message ?? "Unauthorized")
+                throw new Error(apiError?.message ?? "Unauthorized")
             }
 
             if (error && error.status == 404) {
-                throw new NotFoundError(apiError.message ?? "Not found");
+                throw new NotFoundError(apiError?.message ?? "Not found");
             }
 
-            throw new Error(apiError.message ?? "Internal error");
+            throw new Error(apiError?.message ?? "Internal error");
         }))
 }

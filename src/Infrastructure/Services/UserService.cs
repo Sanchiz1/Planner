@@ -20,7 +20,7 @@ public class UserService : IUserService
 
     public async Task<List<UserMembership>> GetWorkspaceUsers(int workSpaceId)
     {
-        var res = await _context.Memberships.Where(m => m.WorkspaceId == workSpaceId).Join(_userManager.Users, m => m.UserId, u => u.Id, (m, u) =>
+        var res = await _context.Memberships.Include(m => m.Role).Where(m => m.WorkspaceId == workSpaceId).Join(_userManager.Users, m => m.UserId, u => u.Id, (m, u) =>
             new UserMembership
             {
                 User = u,

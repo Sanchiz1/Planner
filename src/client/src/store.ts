@@ -1,14 +1,17 @@
-import {combineEpics, createEpicMiddleware, Epic} from "redux-observable";
-import {Action, configureStore, Tuple} from "@reduxjs/toolkit";
+import { Action, configureStore, Tuple } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
+import { combineEpics, createEpicMiddleware, Epic } from "redux-observable";
+import { getUserEpic } from "./features/account/accountEpics";
+import accountReducer from "./features/account/accountSlice";
 import { loginEpic, logoutEpic } from "./features/auth/authEpics";
 import authReducer from "./features/auth/authSlice";
-import accountReducer from "./features/account/accountSlice";
-import myWorkspacesReducer from "./features/myWorkspaces/myWorkspacesSlice";
-import workspaceReducer from "./features/workspace/workspaceSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { getUserEpic } from "./features/account/accountEpics";
+import workspaceMembershipReducer from "./features/workspaceMembership/workspaceMembershipSlice";
+import workspaceMembersReducer from "./features/workspaceMembers/workspaceMembersSlice";
 import { getMyWorkspacesEpic } from "./features/myWorkspaces/myWorkspacesEpics";
-import { getWorkspaceEpic } from "./features/workspace/workspaceEpics";
+import myWorkspacesReducer from "./features/myWorkspaces/myWorkspacesSlice";
+import { getWorkspaceEpic, getWorkspaceMembershipEpic } from "./features/workspace/workspaceEpics";
+import workspaceReducer from "./features/workspace/workspaceSlice";
+import { getWorkspaceMembersEpic } from "./features/workspaceMembers/workspaceMembersEpics";
 
 
 const rootEpic: Epic<Action, Action, void, any> = combineEpics<Action, Action, void, any>(
@@ -16,8 +19,10 @@ const rootEpic: Epic<Action, Action, void, any> = combineEpics<Action, Action, v
     logoutEpic,
     getUserEpic,
     getMyWorkspacesEpic,
-    getWorkspaceEpic
-  );
+    getWorkspaceEpic,
+    getWorkspaceMembershipEpic,
+    getWorkspaceMembersEpic
+);
 
 const epicMiddleware = createEpicMiddleware<Action, Action, void, any>();
 
@@ -28,6 +33,8 @@ export const store = configureStore({
         account: accountReducer,
         myWorkspaces: myWorkspacesReducer,
         workspace: workspaceReducer,
+        workspaceMembership: workspaceMembershipReducer,
+        workspaceMembers: workspaceMembersReducer,
     },
     middleware: () => new Tuple(epicMiddleware)
 })

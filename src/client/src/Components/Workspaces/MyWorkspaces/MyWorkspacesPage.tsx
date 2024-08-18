@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { getMyWorkspaces } from '../../../features/myWorkspaces/myWorkspacesSlice';
 import { ShowFailure } from '../../../Helpers/SnackBarHelper';
 import { useAppDispatch, useAppSelector } from '../../../store';
-import MemershipWorkspaceElementProps from './MemershipWorkspaceElement';
+import MemershipWorkspaceElementProps from './MembershipWorkspaceElement';
 
 export default function MyWorkspacesPage() {
   const dispatch = useAppDispatch();

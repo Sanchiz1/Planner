@@ -19,7 +19,7 @@ public class WorkspaceController : BaseApiController
     }
 
     [HttpGet]
-    [Route("Member")]
+    [Route("member")]
     public async Task<ActionResult<List<MembershipDto>>> GetMemberWorkspaces()
     {
         var userId = User.GetUserId();
@@ -41,8 +41,6 @@ public class WorkspaceController : BaseApiController
     {
         var userId = User.GetUserId();
 
-        if (userId == 0) return Unauthorized();
-
         var result = await sender.Send(new GetWorkspaceQuery()
         {
             WorkspaceId = workspaceId,
@@ -54,12 +52,26 @@ public class WorkspaceController : BaseApiController
 
     [AllowAnonymous]
     [HttpGet]
-    [Route("{workspaceId}/Members")]
-    public async Task<ActionResult<List<UserMembershipDto>>> GetWorkspaceMembers(int workspaceId)
+    [Route("{workspaceId}/membership")]
+    public async Task<ActionResult<MembershipDto>> GetWorkspaceMembership(int workspaceId)
     {
         var userId = User.GetUserId();
 
-        if (userId == 0) return Unauthorized();
+        var result = await sender.Send(new GetWorkspaceMembershipQuery()
+        {
+            WorkspaceId = workspaceId,
+            UserId = userId
+        });
+
+        return HandleResult(result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("{workspaceId}/members")]
+    public async Task<ActionResult<List<UserMembershipDto>>> GetWorkspaceMembers(int workspaceId)
+    {
+        var userId = User.GetUserId();
 
         var result = await sender.Send(new GetWorkspaceUsersQuery()
         {

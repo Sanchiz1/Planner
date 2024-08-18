@@ -2,11 +2,11 @@ import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
 import { Membership } from '../../../Types/Memership';
 import { useNavigate } from 'react-router-dom';
 
-interface MemershipWorkspaceElementProps {
+interface MembershipWorkspaceElementProps {
     membership: Membership
 }
 
-export default function MemershipWorkspaceElement(props: MemershipWorkspaceElementProps) {
+export default function MembershipWorkspaceElement(props: MembershipWorkspaceElementProps) {
     const navigate = useNavigate();
 
     const HandleElementClick = () => {
