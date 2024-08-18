@@ -1,16 +1,11 @@
 ﻿using Application.Common.DTOs;
 using Application.UseCases.Users.Queries;
-using Application.UseCases.Workspaces.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Web.Extensions;
-using Web.Models.Workspace;
 
 namespace Web.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class UserController : Controller
+public class UserController : BaseApiController
 {
     private readonly ISender sender;
     public UserController(ISender _sender)
@@ -27,9 +22,6 @@ public class UserController : Controller
             Email = email
         });
 
-        return result.Match<ActionResult<UserDto>>(
-            res => res,
-            ex => BadRequest(ex)
-        );
+        return HandleResult(result);
     }
 }

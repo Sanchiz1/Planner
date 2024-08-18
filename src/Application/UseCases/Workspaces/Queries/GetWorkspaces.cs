@@ -4,7 +4,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Result;
 
 namespace Application.UseCases.Workspaces.Queries;
 

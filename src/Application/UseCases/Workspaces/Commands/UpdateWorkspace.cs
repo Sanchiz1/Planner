@@ -1,9 +1,10 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Errors;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Result;
 
 namespace Application.UseCases.Workspaces.Commands;
 
@@ -15,7 +16,7 @@ public record UpdateWorkspaceCommand : IRequest<Result<int>>
     public required bool WorkspaceIsPublic { get; init; }
 }
 
-public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceCommand, Result<int>>
+public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 
@@ -24,16 +25,16 @@ public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceComm
         _context = context;
     }
 
-    public async Task<Result<int>> Handle(UpdateWorkspaceCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateWorkspaceCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Memberships
             .Include(membership => membership.Workspace)
             .FirstOrDefaultAsync(membership => membership.UserId == request.UserId && membership.WorkspaceId == request.WorkspaceId, cancellationToken);
         
         if (entity is null)
-            return new NotFoundException("Not a member of the workspace");
-        
-        if (!Role.IsOwnerRole(entity.RoleId)) return new PermissionDeniedException("Only Owner can edit workspace");
+            return new Error(ErrorCodes.MembershipNotFound, "Not a workspace member");
+
+        if (!Role.IsOwnerRole(entity.RoleId)) return new Error(ErrorCodes.PermissionDenied, "Only Owner can edit workspace");
 
         entity.Workspace.UpdateWorkspace(request.WorkspaceName, request.WorkspaceIsPublic);
         
@@ -41,6 +42,6 @@ public class UpdateWorkspaceCommandHandler : IRequestHandler<UpdateWorkspaceComm
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity.Id;
+        return Result.Success();
     }
 }

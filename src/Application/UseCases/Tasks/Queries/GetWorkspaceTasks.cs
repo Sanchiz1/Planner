@@ -1,10 +1,11 @@
 ﻿using Application.Common.DTOs;
+using Application.Common.Errors;
 using Application.Common.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Result;
 
 namespace Application.UseCases.Tasks.Queries;
 
@@ -28,13 +29,13 @@ public class GetWorkspaceTasksQueryHandler : IRequestHandler<GetWorkspaceTasksQu
     {
         var workspace = await _context.Workspaces.FirstOrDefaultAsync(w => w.Id == request.WorkspaceId);
 
-        if (workspace == null) return new Exception("Workspace not found");
+        if (workspace == null) return new Error(ErrorCodes.WorkspaceNotFound, "Workspace not found");
 
         if (!workspace.IsPublic)
         {
             var membership = await _context.Memberships.FirstOrDefaultAsync(m => m.UserId == request.UserId && m.WorkspaceId == workspace.Id);
 
-            if (membership == null) return new Exception("Permission denied");
+            if (membership == null) return new Error(ErrorCodes.MembershipNotFound, "Not a workspace member");
         }
 
         return await _context.Tasks

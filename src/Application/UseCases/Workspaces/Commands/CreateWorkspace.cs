@@ -1,7 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
-using Shared;
+using Shared.Result;
 
 namespace Application.UseCases.Workspaces.Commands;
 

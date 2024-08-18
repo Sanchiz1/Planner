@@ -2,15 +2,9 @@
 using Application.Common.Models;
 using Domain.Entities;
 using Infrastructure.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Result;
 
 namespace Infrastructure.Services;
 
@@ -41,7 +35,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            return new Exception(result.Errors.First().Description);
+            return new Error("FAILED_TO_CREATE_USER", result.Errors.First().Description);
         }
 
         return "Registered successfully";
@@ -51,7 +45,7 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByEmailAsync(email);
 
-        if (user == null) return new Exception("User not found");
+        if (user == null) return new Error("USER_NOT_FOUND", "User not found");
 
         await _signInManager.SignInAsync(user, true);
 
@@ -59,13 +53,13 @@ public class IdentityService : IIdentityService
 
         return token;
     }
-    public async Task<Result<Token>> LoginPasswordAsync(string email, string password)
+    public async Task<Shared.Result.Result<Token>> LoginPasswordAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
 
-        if (user == null) return new Exception("Invalid password ot username");
+        if (user == null) return new Error("INVALID_PASSWORD_OR_USERNAME", "Invalid password ot username");
 
-        if (!await _userManager.CheckPasswordAsync(user, password)) return new Exception("Invalid password ot username");
+        if (!await _userManager.CheckPasswordAsync(user, password)) return new Error("invalid_credentials", "Invalid password ot username");
 
         await _signInManager.SignInAsync(user, true);
 
@@ -91,7 +85,7 @@ public class IdentityService : IIdentityService
 
             if (!result.Succeeded)
             {
-                return new Exception(result.Errors.First().Description);
+                return new Error("FAILED_TO_CREATE_USER", result.Errors.First().Description);
             }
         }
 

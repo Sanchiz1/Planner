@@ -4,14 +4,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Web.Models;
 using Web.Models.Identity;
 
 namespace Web.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class AccountController : Controller
+public class AccountController : BaseApiController
 {
     private readonly IIdentityService _identityService;
     private readonly IConfiguration _configuraion;
@@ -27,10 +23,7 @@ public class AccountController : Controller
     {
         var result = await _identityService.RegisterAsync(request.UserName, request.Email, request.Password);
 
-        return result.Match<ActionResult<string>>(
-        res => Ok(res),
-        ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -39,10 +32,7 @@ public class AccountController : Controller
     {
         var result = await _identityService.LoginPasswordAsync(request.Email, request.Password);
 
-        return result.Match<ActionResult<Token>>(
-            res => Ok(res),
-            ex => BadRequest(ex.Message)
-            );
+        return HandleResult(result);
     }
 
     [HttpGet]
@@ -67,24 +57,23 @@ public class AccountController : Controller
 
         var loginResult = await _identityService.LoginExternalAsync(username, email);
 
-        return loginResult.Match<ActionResult>(
-            res =>
-            {
-                string url = _configuraion["JwtSettings:Audience"];
+        if (loginResult.IsSuccess)
+        {
+            string url = _configuraion["JwtSettings:Audience"];
 
-                HttpContext.Response.Cookies.Append(
-                    "accessToken",
-                    res.Value,
-                    new CookieOptions
-                    {
-                        IsEssential = true,
-                        Expires = res.Expires
-                    }
-                    );
+            HttpContext.Response.Cookies.Append(
+                "accessToken",
+                loginResult.Value.Value,
+                new CookieOptions
+                {
+                    IsEssential = true,
+                    Expires = loginResult.Value.Expires
+                }
+                );
 
-                return Redirect(url);
-            },
-            ex => BadRequest(ex.Message)
-            );
+            return Redirect(url);
+        }
+
+        return HandleResult(loginResult);
     }
 }

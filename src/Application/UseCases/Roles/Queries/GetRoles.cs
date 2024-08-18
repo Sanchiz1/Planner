@@ -1,16 +1,10 @@
 ﻿using Application.Common.DTOs;
 using Application.Common.Interfaces;
-using Application.UseCases.Tasks.Queries;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Result;
 
 namespace Application.UseCases.Roles.Queries;
 

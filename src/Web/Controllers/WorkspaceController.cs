@@ -1,10 +1,7 @@
 ﻿using Application.Common.DTOs;
-using Application.Common.Exceptions;
-using Application.Common.ViewModels;
 using Application.UseCases.Users.Queries;
 using Application.UseCases.Workspaces.Commands;
 using Application.UseCases.Workspaces.Queries;
-using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +9,8 @@ using Web.Extensions;
 using Web.Models.Workspace;
 
 namespace Web.Controllers;
-
 [Authorize]
-[ApiController]
-[Route("[controller]")]
-public class WorkspaceController : Controller
+public class WorkspaceController : BaseApiController
 {
     private readonly ISender sender;
     public WorkspaceController(ISender _sender)
@@ -37,10 +31,7 @@ public class WorkspaceController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<List<WorkspaceDto>>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
 
     [HttpGet]
@@ -57,10 +48,7 @@ public class WorkspaceController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<List<UserMembershipDto>>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -78,15 +66,12 @@ public class WorkspaceController : Controller
             WorkspaceIsPublic = request.WorkspaceIsPublic
         });
 
-        return result.Match<ActionResult<int>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
     [HttpPost]
     [Route("UpdateWorkspace")]
-    public async Task<ActionResult<int>> UpdateWorkspace([FromBody]UpdateWorkspaceDto request)
+    public async Task<ActionResult> UpdateWorkspace([FromBody]UpdateWorkspaceDto request)
     {
         var userId = User.GetUserId();
         
@@ -100,15 +85,12 @@ public class WorkspaceController : Controller
             WorkspaceIsPublic = request.WorkspaceIsPublic
         });
 
-        return result.Match<ActionResult<int>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
     [HttpPost]
     [Route("DeleteWorkspace")]
-    public async Task<ActionResult<string>> DeleteWorkspace([FromBody]DeleteWorkspaceDto request)
+    public async Task<ActionResult> DeleteWorkspace([FromBody]DeleteWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -120,15 +102,12 @@ public class WorkspaceController : Controller
             WorkspaceId = request.WorkspaceId
         });
 
-        return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
     [HttpPost]
     [Route("AddtoWorkspace")]
-    public async Task<ActionResult<string>> AddtoWorkspace([FromBody]AddToWorkspaceDto request)
+    public async Task<ActionResult> AddtoWorkspace([FromBody]AddToWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -142,15 +121,12 @@ public class WorkspaceController : Controller
             ToAddRoleId = request.ToAddRoleId
         });
 
-        return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
     [HttpPost]
     [Route("RemoveFromWorkspace")]
-    public async Task<ActionResult<string>> RemoveFromWorkspace([FromBody]RemoveFromWorkspaceDto request)
+    public async Task<ActionResult> RemoveFromWorkspace([FromBody]RemoveFromWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -163,9 +139,6 @@ public class WorkspaceController : Controller
             ToRemoveMembershipId = request.ToRemoveMembershipId
         });
 
-        return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
 }

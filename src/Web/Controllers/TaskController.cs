@@ -1,20 +1,13 @@
 ﻿using Application.Common.DTOs;
-using Application.UseCases;
 using Application.UseCases.Tasks.Commands;
 using Application.UseCases.Tasks.Queries;
-using Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Web.Extensions;
 using Web.Models.Task;
 
 namespace Web.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class TaskController : Controller
+public class TaskController : BaseApiController
 {
     private readonly ISender sender;
     public TaskController(ISender _sender)
@@ -36,10 +29,7 @@ public class TaskController : Controller
             WorkspaceId = WorkspaceId
         });
 
-        return result.Match<ActionResult<List<TaskDto>>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-            );
+        return HandleResult(result);
     }
 
     [HttpPost]
@@ -60,15 +50,12 @@ public class TaskController : Controller
             EndDate = command.EndDate
         });
 
-        return result.Match<ActionResult<int>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-            );
+        return HandleResult(result);
     }
 
     [HttpPut]
     [Route("UpdateTask")]
-    public async Task<ActionResult<int>> UpdateTask([FromBody] UpdateTaskCommand command)
+    public async Task<ActionResult> UpdateTask([FromBody] UpdateTaskCommand command)
     {
         var userId = User.GetUserId();
 
@@ -84,16 +71,13 @@ public class TaskController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<int>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-            );
+        return HandleResult(result);
     }
 
 
     [HttpDelete]
     [Route("DeleteTask")]
-    public async Task<ActionResult<bool>> DeleteTask([FromBody] DeleteTaskDto command)
+    public async Task<ActionResult> DeleteTask([FromBody] DeleteTaskDto command)
     {
         var userId = User.GetUserId();
 
@@ -105,9 +89,6 @@ public class TaskController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<bool>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-            );
+        return HandleResult(result);
     }
 }
