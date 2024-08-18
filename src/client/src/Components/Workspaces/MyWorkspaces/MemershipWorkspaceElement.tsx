@@ -1,5 +1,5 @@
 import { Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import { Membership } from '../../Types/Memership';
+import { Membership } from '../../../Types/Memership';
 import { useNavigate } from 'react-router-dom';
 
 interface MemershipWorkspaceElementProps {
@@ -10,7 +10,7 @@ export default function MemershipWorkspaceElement(props: MemershipWorkspaceEleme
     const navigate = useNavigate();
 
     const HandleElementClick = () => {
-        navigate("workspaces/" + props.membership.workspaceId);
+        navigate("/workspaces/" + props.membership.workspaceId);
     }
 
     return (

@@ -19,7 +19,7 @@ export const loginEpic = (action$: Observable<Action>) => action$.pipe(
             )
         )),
     catchError((error, caught) =>
-        merge(of(loginFailure(error)),
+        merge(of(loginFailure(error.message)),
             caught
         ))
 );
