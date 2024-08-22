@@ -8,6 +8,7 @@ import { IsLoggedIn } from './Helpers/LoggedInHelper';
 import AccountPage from './Components/Account/AccountPage';
 import WorkspacePage from './Components/Workspaces/Workspace/WorkspacePage';
 import WorkspaceMembersPage from './Components/Workspaces/WorkspaceMembers/WorkspaceMembersPage';
+import WorkspaceSettingsPage from './Components/Workspaces/WorkspaceSettings/WorkspaceSettingPage';
 
 function Content() {
   const router = createBrowserRouter([
@@ -30,6 +31,10 @@ function Content() {
         {
           path: "/workspaces/:workspaceId/members",
           element: <WorkspaceMembersPage />
+        },
+        {
+          path: "/workspaces/:workspaceId/settings",
+          element: <WorkspaceSettingsPage />
         },
         {
           path: "/account",

@@ -3,8 +3,10 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { useEffect } from 'react';
 import { useNavigate, useParams, Link as RouterLink } from 'react-router-dom';
-import { getWorkspace, getWorkspaceMembership } from '../../../features/workspace/workspaceSlice';
+import { getWorkspace } from '../../../features/workspace/workspaceSlice';
 import { useAppDispatch, useAppSelector } from '../../../store';
+import WorkspaceComponent from './WorkspaceComponent';
+import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
 
 export default function WorkspacePage() {
   const navigate = useNavigate();
@@ -18,10 +20,6 @@ export default function WorkspacePage() {
     dispatch(getWorkspace(parseInt(workspaceId)));
     dispatch(getWorkspaceMembership(parseInt(workspaceId)));
   }, [workspaceId]);
-
-  const HandleMembersClick = () => {
-    navigate("members");
-  }
 
   return (
     <Container component="main" maxWidth='xl' sx={{
@@ -39,23 +37,7 @@ export default function WorkspacePage() {
           {workspace.error}
         </Typography>}
       {workspace.workspace &&
-        <>
-          <Typography
-            component="h1"
-            variant="h2"
-            align="left"
-            color="text.primary"
-            gutterBottom
-          >
-            {workspace.workspace.name}
-          </Typography>
-          <Box>
-            {workspaceMembership.membership?.role.name === "Owner" &&
-              <Button variant='contained' sx={{ mr: "5px" }}>Settings</Button>
-            }
-            <Button variant='contained' onClick={HandleMembersClick}>Members</Button>
-          </Box>
-        </>
+        <WorkspaceComponent workspace={workspace.workspace} membership={workspaceMembership.membership} />
       }
     </Container >
   );

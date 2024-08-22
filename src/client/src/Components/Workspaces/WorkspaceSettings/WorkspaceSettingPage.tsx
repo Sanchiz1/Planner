@@ -1,19 +1,18 @@
-import { Breadcrumbs, Button, Link, Typography } from '@mui/material';
+import { Breadcrumbs, FormControl, Link, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { useEffect } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
 import { getWorkspace } from '../../../features/workspace/workspaceSlice';
-import { useAppDispatch, useAppSelector } from '../../../store';
-import MemberElement from './MemberElement';
 import { getWorkspaceMembers } from '../../../features/workspaceMembers/workspaceMembersSlice';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import WorkspaceSettingsComponent from './WorkspaceSettingsComponent';
 import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
 
-export default function WorkspaceMembersPage() {
+export default function WorkspaceSettingsPage() {
   const dispatch = useAppDispatch();
   const { workspaceId } = useParams();
   const workspace = useAppSelector(state => state.workspace);
-  const workspaceMembers = useAppSelector(state => state.workspaceMembers);
   const workspaceMembership = useAppSelector(state => state.workspaceMembership);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function WorkspaceMembersPage() {
       pt: 6, pb: 6,
       bgcolor: 'background.default'
     }}>
-      {workspace.error ?
+      {workspace.error &&
         <Typography
           component="h1"
           variant="h2"
@@ -39,26 +38,10 @@ export default function WorkspaceMembersPage() {
           color="text.primary"
           gutterBottom
         >
-          {workspace.error.toString()}
-        </Typography> :
-        <>
-          <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
-            <Link underline="hover" color="inherit" component={RouterLink} to={"/workspaces/" + workspace?.workspace?.id}>
-              {workspace?.workspace?.name}
-            </Link>
-            <Typography color="text.primary">Members</Typography>
-          </Breadcrumbs>
-          <Box sx={{ mt: "5px" }}>
-            {workspaceMembership.membership?.role.name === "Owner" &&
-              <Button variant='contained' sx={{ mr: "5px" }}>Add</Button>
-            }
-          </Box>
-          {workspaceMembers.members &&
-            <Container maxWidth='md'>
-              {workspaceMembers.members.map(m => <MemberElement membershipUser={m} />)}
-            </Container>
-          }
-        </>
+          {workspace.error}
+        </Typography>}
+      {workspace.workspace &&
+        <WorkspaceSettingsComponent workspace={workspace.workspace} membership={workspaceMembership.membership} />
       }
     </Container >
   );
