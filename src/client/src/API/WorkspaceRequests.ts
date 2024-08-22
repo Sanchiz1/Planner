@@ -20,10 +20,22 @@ export function GetWorkspaceMembership(id: number) {
 }
 
 export function UpdateWorkspace(workspaceId: number, workspaceName: string, workspaceIsPublic: boolean) {
-    return GetAjaxObservable<Workspace>(`/workspace/${workspaceId}`, "PUT", true, { 'Content-Type': 'application/json' }, false,
+    return GetAjaxObservable(`/workspace/${workspaceId}`, "PUT", true, { 'Content-Type': 'application/json' }, false,
         {
             "workspaceName": workspaceName,
             "workspaceIsPublic": workspaceIsPublic
         }
     );
+}
+
+export function DeleteWorkspace(workspaceId: number) {
+    return GetAjaxObservable(`/workspace/${workspaceId}`, "DELETE", true, { 'Content-Type': 'application/json' });
+}
+
+export function CreateWorkspace(workspaceName: string, workspaceIsPublic: boolean) {
+    return GetAjaxObservable<number>(`/workspace`, "POST", true, { 'Content-Type': 'application/json' }, false,
+        {
+            "workspaceName": workspaceName,
+            "workspaceIsPublic": workspaceIsPublic
+        });
 }

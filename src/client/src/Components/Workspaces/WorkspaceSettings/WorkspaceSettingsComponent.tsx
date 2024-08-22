@@ -1,11 +1,11 @@
-import { Breadcrumbs, Button, Grid, Link, Switch, TextField, Typography } from '@mui/material';
+import { Breadcrumbs, Button, Divider, Grid, Link, Switch, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAppDispatch } from '../../../store';
 import { Membership } from '../../../Types/Memership';
 import { Workspace } from '../../../Types/Workspace';
-import { updateWorkspace } from '../../../features/workspace/workspaceSlice';
+import { deleteWorkspace, updateWorkspace } from '../../../features/workspace/workspaceSlice';
 
 type WorkspaceProps = {
     workspace: Workspace,
@@ -27,6 +27,10 @@ export default function WorkspaceSettingsComponent(props: WorkspaceProps) {
 
     const HandleEditWorkspace = () => {
         dispatch(updateWorkspace(workspaceToEdit));
+    }
+
+    const HandleDeleteWorkspace = () => {
+        dispatch(deleteWorkspace(workspace.id));
     }
 
     return (
@@ -72,6 +76,15 @@ export default function WorkspaceSettingsComponent(props: WorkspaceProps) {
                     {/* Update Button */}
                     <Grid item>
                         <Button variant="contained" size="small" onClick={HandleEditWorkspace}>Save</Button>
+                    </Grid>
+                    <Divider sx={{ my: "10px" }} />
+
+                    <Grid item>
+                        <Typography variant="subtitle2">Delete workspace</Typography>
+                        <Typography variant="caption" color='grey'>Once you delete a repository, there is no going back. Please be certain.</Typography>
+                        <Grid item sx={{ mt: "5px" }}>
+                            <Button variant="outlined" size="small" color='error' onClick={HandleDeleteWorkspace}>Delete Workspace</Button>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Box>

@@ -7,9 +7,11 @@ import { getMyWorkspaces } from '../../../features/myWorkspaces/myWorkspacesSlic
 import { ShowFailure } from '../../../Helpers/SnackBarHelper';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import MemershipWorkspaceElementProps from './MembershipWorkspaceElement';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyWorkspacesPage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { error, success, memerships } = useAppSelector(state => state.myWorkspaces);
 
   useEffect(() => {
@@ -19,6 +21,10 @@ export default function MyWorkspacesPage() {
   useEffect(() => {
     if (error) ShowFailure(error);
   }, [success]);
+
+  const HandleCreateClick = () => {
+    navigate("/workspaces/create")
+  }
 
   return (
     <Container component="main" maxWidth='xl' sx={{
@@ -34,7 +40,7 @@ export default function MyWorkspacesPage() {
       >
         Workspaces
       </Typography>
-      <Button variant='contained'>Create</Button>
+      <Button variant='contained' onClick={HandleCreateClick}>Create</Button>
       <Box sx={{
         mt: "10px",
         display: "flex",

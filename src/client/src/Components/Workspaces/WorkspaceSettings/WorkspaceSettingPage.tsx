@@ -1,14 +1,12 @@
-import { Breadcrumbs, FormControl, Link, TextField, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
+import { Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import { useEffect } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
-import { getWorkspace } from '../../../features/workspace/workspaceSlice';
-import { getWorkspaceMembers } from '../../../features/workspaceMembers/workspaceMembersSlice';
+import { useParams } from 'react-router-dom';
+import { deleteWorkspaceWait, getWorkspace, updateWorkspaceWait } from '../../../features/workspace/workspaceSlice';
+import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
+import { ShowFailure, ShowSuccess } from '../../../Helpers/SnackBarHelper';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import WorkspaceSettingsComponent from './WorkspaceSettingsComponent';
-import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
-import { OWNER_ROLE_NAME } from '../../../config';
 
 export default function WorkspaceSettingsPage() {
   const dispatch = useAppDispatch();
@@ -24,6 +22,28 @@ export default function WorkspaceSettingsPage() {
     dispatch(getWorkspace(id));
     dispatch(getWorkspaceMembership(id));
   }, [workspaceId]);
+
+  useEffect(() => {
+    if (workspace.updateSuccess) {
+      ShowSuccess("Workspace updated successfully");
+      dispatch(updateWorkspaceWait());
+    }
+    if (workspace.updateError) {
+      ShowFailure(workspace.updateError);
+      dispatch(updateWorkspaceWait());
+    }
+  }, [workspace.updateSuccess, workspace.updateError]);
+
+  useEffect(() => {
+    if (workspace.deleteSuccess) {
+      ShowSuccess("Workspace deleted successfully");
+      dispatch(deleteWorkspaceWait());
+    }
+    if (workspace.deleteError) {
+      ShowFailure(workspace.deleteError);
+      dispatch(deleteWorkspaceWait());
+    }
+  }, [workspace.deleteSuccess, workspace.deleteError]);
 
   return (
     <Container component="main" maxWidth='xl' sx={{

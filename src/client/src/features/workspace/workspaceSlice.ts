@@ -8,7 +8,13 @@ export interface WorkspaceType {
     error: string | null,
     updating: boolean,
     updateSuccess: boolean | null,
-    updateError: string | null
+    updateError: string | null,
+    deleting: boolean,
+    deleteSuccess: boolean | null,
+    deleteError: string | null,
+    creating: boolean,
+    createSuccess: boolean | null,
+    createError: string | null
 }
 const initialState: WorkspaceType =
 {
@@ -18,7 +24,13 @@ const initialState: WorkspaceType =
     error: null,
     updating: false,
     updateSuccess: null,
-    updateError: null
+    updateError: null,
+    deleting: false,
+    deleteSuccess: null,
+    deleteError: null,
+    creating: false,
+    createSuccess: null,
+    createError: null
 };
 
 const workspaceSlice = createSlice({
@@ -26,7 +38,6 @@ const workspaceSlice = createSlice({
     initialState,
     reducers: {
         getWorkspace: (state, action: PayloadAction<number>) => {
-            state.workspace = null;
             state.loading = true;
             state.success = null;
             state.error = null;
@@ -45,7 +56,7 @@ const workspaceSlice = createSlice({
         },
         updateWorkspace: (state, action: PayloadAction<Workspace>) => {
             state.updating = true;
-            state.updateSuccess = false;
+            state.updateSuccess = null;
             state.updateError = null;
         },
         updateWorkspaceSuccess: (state) => {
@@ -57,6 +68,52 @@ const workspaceSlice = createSlice({
             state.loading = false;
             state.updateSuccess = false;
             state.updateError = action.payload;
+        },
+        updateWorkspaceWait: (state) => {
+            state.updating = false;
+            state.updateSuccess = null;
+            state.updateError = null;
+        },
+        deleteWorkspace: (state, action: PayloadAction<number>) => {
+            state.deleting = true;
+            state.deleteSuccess = null;
+            state.deleteError = null;
+        },
+        deleteWorkspaceSuccess: (state) => {
+            state.deleting = false;
+            state.deleteSuccess = true;
+            state.deleteError = null;
+        },
+        deleteWorkspaceFailure: (state, action: PayloadAction<string>) => {;
+            state.deleting = false;
+            state.deleteSuccess = false;
+            state.deleteError = action.payload;
+        },
+        deleteWorkspaceWait: (state) => {
+            state.deleting = false;
+            state.deleteSuccess = null;
+            state.deleteError = null;
+        },
+        createWorkspace: (state, action: PayloadAction<Workspace>) => {
+            state.workspace = null;
+            state.creating = true;
+            state.createSuccess = null;
+            state.createError = null;
+        },
+        createWorkspaceSuccess: (state) => {
+            state.creating = false;
+            state.createSuccess = true;
+            state.createError = null;
+        },
+        createWorkspaceFailure: (state, action: PayloadAction<string>) => {;
+            state.creating = false;
+            state.createSuccess = false;
+            state.createError = action.payload;
+        },
+        createWorkspaceWait: (state) => {
+            state.creating = false;
+            state.createSuccess = null;
+            state.createError = null;
         }
     }
 })
@@ -67,7 +124,16 @@ export const {
     getWorkspaceFailure,
     updateWorkspace,
     updateWorkspaceSuccess,
-    updateWorkspaceFailure
+    updateWorkspaceFailure,
+    updateWorkspaceWait,
+    deleteWorkspace,
+    deleteWorkspaceSuccess,
+    deleteWorkspaceFailure,
+    deleteWorkspaceWait,
+    createWorkspace,
+    createWorkspaceSuccess,
+    createWorkspaceFailure,
+    createWorkspaceWait
 } = workspaceSlice.actions;
 
 export default workspaceSlice.reducer;

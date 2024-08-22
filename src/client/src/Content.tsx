@@ -9,6 +9,7 @@ import AccountPage from './Components/Account/AccountPage';
 import WorkspacePage from './Components/Workspaces/Workspace/WorkspacePage';
 import WorkspaceMembersPage from './Components/Workspaces/WorkspaceMembers/WorkspaceMembersPage';
 import WorkspaceSettingsPage from './Components/Workspaces/WorkspaceSettings/WorkspaceSettingPage';
+import CreateWorkspacePage from './Components/Workspaces/CreateWorkspace/CreateWorkspacePage';
 
 function Content() {
   const router = createBrowserRouter([
@@ -22,6 +23,11 @@ function Content() {
         {
           path: "/workspaces",
           element: <MyWorkspacesPage />,
+          loader: async () => requireAuth() 
+        },
+        {
+          path: "/workspaces/create",
+          element: <CreateWorkspacePage />,
           loader: async () => requireAuth() 
         },
         {

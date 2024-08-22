@@ -7,7 +7,7 @@ import { loginEpic, logoutEpic } from "./features/auth/authEpics";
 import authReducer from "./features/auth/authSlice";
 import { getMyWorkspacesEpic } from "./features/myWorkspaces/myWorkspacesEpics";
 import myWorkspacesReducer from "./features/myWorkspaces/myWorkspacesSlice";
-import { getWorkspaceEpic, updateWorkspaceEpic } from "./features/workspace/workspaceEpics";
+import { createWorkspaceEpic, deleteWorkspaceEpic, getWorkspaceEpic, updateWorkspaceEpic } from "./features/workspace/workspaceEpics";
 import workspaceReducer from "./features/workspace/workspaceSlice";
 import { getWorkspaceMembersEpic } from "./features/workspaceMembers/workspaceMembersEpics";
 import workspaceMembersReducer from "./features/workspaceMembers/workspaceMembersSlice";
@@ -22,6 +22,8 @@ const rootEpic: Epic<Action, Action, void, any> = combineEpics<Action, Action, v
     getMyWorkspacesEpic,
     getWorkspaceEpic,
     updateWorkspaceEpic,
+    deleteWorkspaceEpic,
+    createWorkspaceEpic,
     getWorkspaceMembershipEpic,
     getWorkspaceMembersEpic
 );

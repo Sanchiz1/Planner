@@ -25,10 +25,12 @@ public class CreateWorkspaceCommandHandler : IRequestHandler<CreateWorkspaceComm
     {
         var entity = Membership.CreateWorkspace(request.UserId, request.WorkspaceName, request.WorkspaceIsPublic);
 
+        this._context.MembershipRoles.Attach(entity.Role);
+        
         await _context.Memberships.AddAsync(entity);
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity.Id;
+        return entity.Workspace.Id;
     }
 }
