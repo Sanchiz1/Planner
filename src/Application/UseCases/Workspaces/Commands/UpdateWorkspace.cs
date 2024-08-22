@@ -8,7 +8,7 @@ using Shared.Result;
 
 namespace Application.UseCases.Workspaces.Commands;
 
-public record UpdateWorkspaceCommand : IRequest<Result<int>>
+public record UpdateWorkspaceCommand : IRequest<Result>
 {
     public int UserId { get; init; }
     public int WorkspaceId { get; init; }

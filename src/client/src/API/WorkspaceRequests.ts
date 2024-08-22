@@ -18,3 +18,12 @@ export function GetWorkspaceMembers(id: number) {
 export function GetWorkspaceMembership(id: number) {
     return GetAjaxObservable<Membership>(`/workspace/${id}/membership`, "GET", true, { 'Content-Type': 'application/json' });
 }
+
+export function UpdateWorkspace(workspaceId: number, workspaceName: string, workspaceIsPublic: boolean) {
+    return GetAjaxObservable<Workspace>(`/workspace/${workspaceId}`, "PUT", true, { 'Content-Type': 'application/json' }, false,
+        {
+            "workspaceName": workspaceName,
+            "workspaceIsPublic": workspaceIsPublic
+        }
+    );
+}

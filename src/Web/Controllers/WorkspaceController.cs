@@ -2,6 +2,7 @@
 using Application.UseCases.Users.Queries;
 using Application.UseCases.Workspaces.Commands;
 using Application.UseCases.Workspaces.Queries;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -81,28 +82,10 @@ public class WorkspaceController : BaseApiController
 
         return HandleResult(result);
     }
-
-    [HttpPost]
-    [Route("CreateWorkspace")]
-    public async Task<ActionResult<int>> CreateWorkspace([FromBody]CreateWorkspaceDto request)
-    {
-        var userId = User.GetUserId();
-
-        if (userId == 0) return Unauthorized();
-        
-        var result = await sender.Send(new CreateWorkspaceCommand()
-        {
-            UserId = userId,
-            WorkspaceName = request.WorkspaceName,
-            WorkspaceIsPublic = request.WorkspaceIsPublic
-        });
-
-        return HandleResult(result);
-    }
     
-    [HttpPost]
-    [Route("UpdateWorkspace")]
-    public async Task<ActionResult> UpdateWorkspace([FromBody]UpdateWorkspaceDto request)
+    [HttpPut]
+    [Route("{workspaceId}")]
+    public async Task<ActionResult> UpdateWorkspace(int workspaceId, [FromBody]UpdateWorkspaceDto request)
     {
         var userId = User.GetUserId();
         
@@ -111,7 +94,7 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new UpdateWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.WorkspaceId,
+            WorkspaceId = workspaceId,
             WorkspaceName = request.WorkspaceName,
             WorkspaceIsPublic = request.WorkspaceIsPublic
         });
@@ -119,9 +102,9 @@ public class WorkspaceController : BaseApiController
         return HandleResult(result);
     }
     
-    [HttpPost]
-    [Route("DeleteWorkspace")]
-    public async Task<ActionResult> DeleteWorkspace([FromBody]DeleteWorkspaceDto request)
+    [HttpDelete]
+    [Route("{workspaceId}")]
+    public async Task<ActionResult> DeleteWorkspace(int workspaceId)
     {
         var userId = User.GetUserId();
 
@@ -130,14 +113,14 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new DeleteWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.WorkspaceId
+            WorkspaceId = workspaceId
         });
 
         return HandleResult(result);
     }
     
     [HttpPost]
-    [Route("AddtoWorkspace")]
+    [Route("{workspaceId}/members")]
     public async Task<ActionResult> AddtoWorkspace([FromBody]AddToWorkspaceDto request)
     {
         var userId = User.GetUserId();
@@ -155,8 +138,8 @@ public class WorkspaceController : BaseApiController
         return HandleResult(result);
     }
     
-    [HttpPost]
-    [Route("RemoveFromWorkspace")]
+    [HttpDelete]
+    [Route("{workspaceId}/members")]
     public async Task<ActionResult> RemoveFromWorkspace([FromBody]RemoveFromWorkspaceDto request)
     {
         var userId = User.GetUserId();
@@ -168,6 +151,24 @@ public class WorkspaceController : BaseApiController
             UserId = userId,
             MembershipId = request.MembershipId,
             ToRemoveMembershipId = request.ToRemoveMembershipId
+        });
+
+        return HandleResult(result);
+    }
+
+    [HttpPost]
+    [Route("")]
+    public async Task<ActionResult<int>> CreateWorkspace([FromBody] CreateWorkspaceDto request)
+    {
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+
+        var result = await sender.Send(new CreateWorkspaceCommand()
+        {
+            UserId = userId,
+            WorkspaceName = request.WorkspaceName,
+            WorkspaceIsPublic = request.WorkspaceIsPublic
         });
 
         return HandleResult(result);

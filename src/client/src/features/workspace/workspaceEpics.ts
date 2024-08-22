@@ -1,9 +1,10 @@
 import { Action, PayloadAction } from "@reduxjs/toolkit";
 import { ofType } from "redux-observable";
 import { catchError, map, merge, mergeMap, Observable, of } from "rxjs";
-import { GetWorkspace } from "../../API/WorkspaceRequests";
+import { GetWorkspace, UpdateWorkspace } from "../../API/WorkspaceRequests";
 import { Workspace } from "../../Types/Workspace";
-import { getWorkspace, getWorkspaceFailure, getWorkspaceSuccess } from "./workspaceSlice";
+import { getWorkspace, getWorkspaceFailure, getWorkspaceSuccess, updateWorkspace, updateWorkspaceFailure, updateWorkspaceSuccess } from "./workspaceSlice";
+import { updateWorkspaceMemberSuccess } from "../workspaceMembers/workspaceMembersSlice";
 
 export const getWorkspaceEpic = (action$: Observable<Action>) => action$.pipe(
     ofType(getWorkspace.type),
@@ -16,6 +17,18 @@ export const getWorkspaceEpic = (action$: Observable<Action>) => action$.pipe(
         )),
     catchError((error, caught) =>
         merge(of(getWorkspaceFailure(error.message)),
+            caught
+        ))
+);
+export const updateWorkspaceEpic = (action$: Observable<Action>) => action$.pipe(
+    ofType(updateWorkspace.type),
+    mergeMap((action: PayloadAction<Workspace>) =>
+        UpdateWorkspace(action.payload.id, action.payload.name, action.payload.isPublic).pipe(
+            map(() => updateWorkspaceSuccess()),
+            map(() => getWorkspace(action.payload.id))
+        )),
+    catchError((error, caught) =>
+        merge(of(updateWorkspaceFailure(error.message)),
             caught
         ))
 );

@@ -8,6 +8,7 @@ import { getWorkspaceMembers } from '../../../features/workspaceMembers/workspac
 import { useAppDispatch, useAppSelector } from '../../../store';
 import WorkspaceSettingsComponent from './WorkspaceSettingsComponent';
 import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
+import { OWNER_ROLE_NAME } from '../../../config';
 
 export default function WorkspaceSettingsPage() {
   const dispatch = useAppDispatch();
@@ -21,7 +22,6 @@ export default function WorkspaceSettingsPage() {
     const id = parseInt(workspaceId);
 
     dispatch(getWorkspace(id));
-    dispatch(getWorkspaceMembers(id));
     dispatch(getWorkspaceMembership(id));
   }, [workspaceId]);
 
@@ -30,7 +30,7 @@ export default function WorkspaceSettingsPage() {
       pt: 6, pb: 6,
       bgcolor: 'background.default'
     }}>
-      {workspace.error &&
+      {workspaceMembership.error ?
         <Typography
           component="h1"
           variant="h2"
@@ -38,10 +38,25 @@ export default function WorkspaceSettingsPage() {
           color="text.primary"
           gutterBottom
         >
-          {workspace.error}
-        </Typography>}
-      {workspace.workspace &&
-        <WorkspaceSettingsComponent workspace={workspace.workspace} membership={workspaceMembership.membership} />
+          Permission denied
+        </Typography>
+        :
+        <>{
+          workspace.error &&
+          <Typography
+            component="h1"
+            variant="h2"
+            align="left"
+            color="text.primary"
+            gutterBottom
+          >
+            {workspace.error}
+          </Typography>
+        }
+          {workspace.workspace &&
+            <WorkspaceSettingsComponent workspace={workspace.workspace} membership={workspaceMembership.membership} />
+          }
+        </>
       }
     </Container >
   );
