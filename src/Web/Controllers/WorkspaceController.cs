@@ -131,7 +131,7 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new AddToWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.MembershipId,
+            WorkspaceId = request.WorkspaceId,
             ToAddUserId = request.ToAddUserId,
             ToAddRoleId = request.ToAddRoleId
         });
@@ -150,7 +150,7 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new RemoveFromWorkspaceCommand()
         {
             UserId = userId,
-            MembershipId = request.MembershipId,
+            WorkspaceId = request.WorkspaceId,
             ToRemoveMembershipId = request.ToRemoveMembershipId
         });
 

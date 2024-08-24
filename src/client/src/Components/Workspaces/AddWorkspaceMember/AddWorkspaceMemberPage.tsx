@@ -18,6 +18,7 @@ export default function AddWorkspaceMemberPage() {
     const addWorkspaceMember = useAppSelector(state => state.addWorkspaceMember);
 
     const [search, setSearch] = useState<string>("");
+    const [toAddUserId, setToAddUserId] = useState<number | null>(null);
 
     useEffect(() => {
         if (!workspaceId) return;
@@ -33,9 +34,8 @@ export default function AddWorkspaceMemberPage() {
 
         dispatch(getUsers(search));
     }
-    
-    const HandleAddMember = (userId: number) => {
-        onAddMember(roleId);
+
+    const HandleAddMember = () => {
     }
 
     return (
@@ -94,7 +94,7 @@ export default function AddWorkspaceMemberPage() {
                                         {addWorkspaceMember.users.map(u =>
                                             <UserElement
                                                 user={u}
-                                                onAddMember={() => HandleAddMember(u.id)}
+                                                onAddMember={() => setToAddUserId(u.id)}
                                             />)
                                         }
                                     </>
