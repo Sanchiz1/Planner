@@ -1,24 +1,27 @@
-import { Breadcrumbs, Button, ButtonGroup, Link, TextField, Typography } from '@mui/material';
+import { Breadcrumbs, Button, ButtonGroup, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, InputLabel, Link, MenuItem, Select, TextField, Typography } from '@mui/material';
 import Container from '@mui/material/Container';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
-import { OWNER_ROLE_NAME } from '../../../config';
+import { MEMBER_ROLE_ID, MEMBER_ROLE_NAME, OWNER_ROLE_ID, OWNER_ROLE_NAME, VIEWER_ROLE_ID, VIEWER_ROLE_NAME } from '../../../config';
 import { getWorkspace } from '../../../features/workspace/workspaceSlice';
 import { getWorkspaceMembers } from '../../../features/workspaceMembers/workspaceMembersSlice';
 import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
 import { useAppDispatch, useAppSelector } from '../../../store';
-import { getUsers } from '../../../features/addWorkspaceMember/addWorkspaceMemberSlice';
+import { addWorkspaceMember, addWorkspaceMemberWait, getUsers } from '../../../features/addWorkspaceMember/usersReducerSlice';
 import UserElement from './UserElement';
+import { User } from '../../../Types/User';
+import { ShowFailure, ShowSuccess } from '../../../Helpers/SnackBarHelper';
 
 export default function AddWorkspaceMemberPage() {
     const dispatch = useAppDispatch();
     const { workspaceId } = useParams();
     const workspace = useAppSelector(state => state.workspace);
     const workspaceMembership = useAppSelector(state => state.workspaceMembership);
-    const addWorkspaceMember = useAppSelector(state => state.addWorkspaceMember);
+    const users = useAppSelector(state => state.users);
 
     const [search, setSearch] = useState<string>("");
-    const [toAddUserId, setToAddUserId] = useState<number | null>(null);
+    const [toAddUser, setToAddUser] = useState<User | null>(null);
+    const [toAddUserRole, setToAddUserRole] = useState<number>(2);
 
     useEffect(() => {
         if (!workspaceId) return;
@@ -29,14 +32,41 @@ export default function AddWorkspaceMemberPage() {
         dispatch(getWorkspaceMembership(id));
     }, [workspaceId]);
 
+    useEffect(() => {
+        if (users.addSuccess) {
+            ShowSuccess("User added successfully");
+            dispatch(addWorkspaceMemberWait());
+        }
+        if (users.addError) {
+            ShowFailure(users.addError);
+            dispatch(addWorkspaceMemberWait());
+        }
+    }, [users.addSuccess, users.addError]);
+
     const HandleSearchUsers = () => {
         if (search.length === 0) return;
 
         dispatch(getUsers(search));
     }
-    
-    const HandleAddMember = (userId: number) => {
-        onAddMember(roleId);
+
+    const handleAddUserDialogOpen = (user: User) => {
+        setToAddUser(user);
+    };
+
+    const handleAddUserDialogClose = () => {
+        setToAddUser(null);
+    };
+
+    const HandleAddMember = () => {
+        if (workspace.workspace?.id && toAddUser?.id) {
+            dispatch(addWorkspaceMember({
+                workspaceId: workspace.workspace?.id,
+                userId: toAddUser?.id,
+                roleId: toAddUserRole
+            }));
+
+            handleAddUserDialogClose();
+        }
     }
 
     return (
@@ -90,12 +120,12 @@ export default function AddWorkspaceMemberPage() {
                                 </ButtonGroup>
                             </Container>
                             <Container>
-                                {addWorkspaceMember.users &&
+                                {users.users &&
                                     <>
-                                        {addWorkspaceMember.users.map(u =>
+                                        {users.users.map(u =>
                                             <UserElement
                                                 user={u}
-                                                onAddMember={() => setToAddUserId(u.id)}
+                                                onAddMember={() => handleAddUserDialogOpen(u)}
                                             />)
                                         }
                                     </>
@@ -105,6 +135,35 @@ export default function AddWorkspaceMemberPage() {
                     }
                 </>
             }
+            <Dialog
+                open={toAddUser !== null}
+                onClose={handleAddUserDialogClose}
+                transitionDuration={0}
+            >
+                <DialogContent>
+                    <DialogContentText>
+                        {`Add user ${toAddUser?.email} to the workspace?`}
+                    </DialogContentText>
+                    <FormControl fullWidth sx={{ mt: "10px" }}>
+                        <InputLabel>Member Role</InputLabel>
+                        <Select
+                            value={toAddUserRole}
+                            onChange={(e) => setToAddUserRole(e.target.value as number)}
+                            size='small'
+                            label="Member Role"
+                        >
+                            <MenuItem value={MEMBER_ROLE_ID}>{MEMBER_ROLE_NAME}</MenuItem>
+                            <MenuItem value={VIEWER_ROLE_ID}>{VIEWER_ROLE_NAME}</MenuItem>
+                        </Select>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAddUserDialogClose}>Cancel</Button>
+                    <Button onClick={HandleAddMember} autoFocus>
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Container >
     );
 }

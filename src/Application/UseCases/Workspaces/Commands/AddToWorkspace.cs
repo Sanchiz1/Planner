@@ -49,6 +49,12 @@ public class AddToWorkspaceCommandHandler : IRequestHandler<AddToWorkspaceComman
         if (role is null)
             return new Error(ErrorCodes.RoleNotFound, "Role does not exist");
 
+        var membershipExists = await _context.Memberships
+            .AnyAsync(m => m.UserId == user.Id && m.WorkspaceId == request.WorkspaceId, cancellationToken);
+
+        if(membershipExists)
+            return new Error(ErrorCodes.OwnerAlreadyExists, "User is already a member");
+
         if (Role.IsOwnerRole(role.Id))
             return new Error(ErrorCodes.OwnerAlreadyExists, "Cannot add another Owner");
 

@@ -3,6 +3,7 @@ import { Workspace } from "../../Types/Workspace";
 import { Membership } from "../../Types/Memership";
 import { MembershipUser } from "../../Types/MembershipUser";
 import { User } from "../../Types/User";
+import { AddMemberPayload } from "./types/addMemberPayload";
 
 export interface AddWorkspaceMemberType {
     users: User[] | null,
@@ -10,8 +11,8 @@ export interface AddWorkspaceMemberType {
     success: boolean | null,
     error: string | null,
     adding: boolean,
-    addingSuccess: boolean | null,
-    addingError: string | null
+    addSuccess: boolean | null,
+    addError: string | null
 }
 const initialState: AddWorkspaceMemberType =
 {
@@ -20,11 +21,11 @@ const initialState: AddWorkspaceMemberType =
     success: null,
     error: null,
     adding: false,
-    addingSuccess: null,
-    addingError: null
+    addSuccess: null,
+    addError: null
 };
 
-const workspaceSlice = createSlice({
+const usersSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
@@ -46,20 +47,25 @@ const workspaceSlice = createSlice({
             state.success = false;
             state.error = action.payload;
         },
-        addWorkspaceMember: (state, action: PayloadAction<number>) => {
+        addWorkspaceMember: (state, action: PayloadAction<AddMemberPayload>) => {
             state.adding = true;
-            state.addingSuccess = null;
-            state.addingError = null;
+            state.addSuccess = null;
+            state.addError = null;
         },
         addWorkspaceMemberSuccess: (state) => {
             state.adding = false;
-            state.addingSuccess = true;
-            state.addingError = null;
+            state.addSuccess = true;
+            state.addError = null;
         },
         addWorkspaceMemberFailure: (state, action: PayloadAction<string>) => {
             state.adding = false;
-            state.addingSuccess = false;
-            state.addingError = action.payload;
+            state.addSuccess = false;
+            state.addError = action.payload;
+        },
+        addWorkspaceMemberWait: (state) => {
+            state.adding = false;
+            state.addSuccess = null;
+            state.addError = null;
         }
     }
 })
@@ -70,7 +76,8 @@ export const {
     getUsersFailure,
     addWorkspaceMember,
     addWorkspaceMemberSuccess,
-    addWorkspaceMemberFailure
-} = workspaceSlice.actions;
+    addWorkspaceMemberFailure,
+    addWorkspaceMemberWait
+} = usersSlice.actions;
 
-export default workspaceSlice.reducer;
+export default usersSlice.reducer;

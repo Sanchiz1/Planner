@@ -15,6 +15,23 @@ export function GetWorkspaceMembers(id: number) {
     return GetAjaxObservable<MembershipUser[]>(`/workspace/${id}/members`, "GET", false, { 'Content-Type': 'application/json' });
 }
 
+export function AddWorkspaceMember(workspaceId: number, userId: number, roleId: number) {
+    return GetAjaxObservable(`/workspace/${workspaceId}/members`, "POST", true, { 'Content-Type': 'application/json' }, false,
+        {
+            "toAddUserId": userId,
+            "toAddRoleId": roleId
+        });
+}
+
+
+export function RemoveWorkspaceMembers(workspaceId: number, toRemoveMembershipId: number) {
+    return GetAjaxObservable(`/workspace/${workspaceId}/members`, "DELETE", true, { 'Content-Type': 'application/json' }, false,
+        {
+            "toRemoveMembershipId": toRemoveMembershipId
+        });
+}
+
+
 export function GetWorkspaceMembership(id: number) {
     return GetAjaxObservable<Membership>(`/workspace/${id}/membership`, "GET", true, { 'Content-Type': 'application/json' });
 }

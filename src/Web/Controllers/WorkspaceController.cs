@@ -122,7 +122,7 @@ public class WorkspaceController : BaseApiController
     
     [HttpPost]
     [Route("{workspaceId}/members")]
-    public async Task<ActionResult> AddtoWorkspace([FromBody]AddToWorkspaceDto request)
+    public async Task<ActionResult> AddtoWorkspace(int workspaceId, [FromBody]AddToWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -131,7 +131,7 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new AddToWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.WorkspaceId,
+            WorkspaceId = workspaceId,
             ToAddUserId = request.ToAddUserId,
             ToAddRoleId = request.ToAddRoleId
         });
@@ -141,7 +141,7 @@ public class WorkspaceController : BaseApiController
     
     [HttpDelete]
     [Route("{workspaceId}/members")]
-    public async Task<ActionResult> RemoveFromWorkspace([FromBody]RemoveFromWorkspaceDto request)
+    public async Task<ActionResult> RemoveFromWorkspace(int workspaceId, [FromBody]RemoveFromWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -150,7 +150,7 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new RemoveFromWorkspaceCommand()
         {
             UserId = userId,
-            MembershipId = request.MembershipId,
+            WorkspaceId = workspaceId,
             ToRemoveMembershipId = request.ToRemoveMembershipId
         });
 

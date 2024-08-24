@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { combineEpics, createEpicMiddleware, Epic } from "redux-observable";
 import { getUserEpic } from "./features/account/accountEpics";
 import accountReducer from "./features/account/accountSlice";
-import addWorkspaceMemberReducer from "./features/addWorkspaceMember/addWorkspaceMemberSlice";
+import usersReducer from "./features/addWorkspaceMember/usersReducerSlice";
 import { loginEpic, logoutEpic } from "./features/auth/authEpics";
 import authReducer from "./features/auth/authSlice";
 import { getMyWorkspacesEpic } from "./features/myWorkspaces/myWorkspacesEpics";
@@ -14,7 +14,7 @@ import { getWorkspaceMembersEpic } from "./features/workspaceMembers/workspaceMe
 import workspaceMembersReducer from "./features/workspaceMembers/workspaceMembersSlice";
 import workspaceMembershipReducer from "./features/workspaceMembership/workspaceMembershipSlice";
 import { getWorkspaceMembershipEpic } from "./features/workspaceMembership/workspaceMembershipEpics";
-import { getUsersEpic } from "./features/addWorkspaceMember/addWorkspaceMemberEpics";
+import { addWorkspaceMemberEpic, getUsersEpic } from "./features/addWorkspaceMember/usersEpics";
 
 
 const rootEpic: Epic<Action, Action, void, any> = combineEpics<Action, Action, void, any>(
@@ -28,7 +28,8 @@ const rootEpic: Epic<Action, Action, void, any> = combineEpics<Action, Action, v
     createWorkspaceEpic,
     getWorkspaceMembershipEpic,
     getWorkspaceMembersEpic,
-    getUsersEpic
+    getUsersEpic,
+    addWorkspaceMemberEpic
 );
 
 const epicMiddleware = createEpicMiddleware<Action, Action, void, any>();
@@ -42,7 +43,7 @@ export const store = configureStore({
         workspace: workspaceReducer,
         workspaceMembership: workspaceMembershipReducer,
         workspaceMembers: workspaceMembersReducer,
-        addWorkspaceMember: addWorkspaceMemberReducer
+        users: usersReducer
     },
     middleware: () => new Tuple(epicMiddleware)
 })
