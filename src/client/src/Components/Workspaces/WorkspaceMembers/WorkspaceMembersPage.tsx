@@ -2,15 +2,17 @@ import { Breadcrumbs, Button, Link, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { useEffect } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { getWorkspace } from '../../../features/workspace/workspaceSlice';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import MemberElement from './MemberElement';
 import { getWorkspaceMembers } from '../../../features/workspaceMembers/workspaceMembersSlice';
 import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
+import { OWNER_ROLE_NAME } from '../../../config';
 
 export default function WorkspaceMembersPage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { workspaceId } = useParams();
   const workspace = useAppSelector(state => state.workspace);
   const workspaceMembers = useAppSelector(state => state.workspaceMembers);
@@ -26,12 +28,20 @@ export default function WorkspaceMembersPage() {
     dispatch(getWorkspaceMembership(id));
   }, [workspaceId]);
 
+  const HandleRemoveMember = (membershipId: number) => {
+
+  }
+
+  const HandleUpdateMember = (membershipId: number, roleId: number) => {
+
+  }
+
   return (
     <Container component="main" maxWidth='xl' sx={{
-      pt: 6, pb: 6,
+      pt: 8, pb: 6,
       bgcolor: 'background.default'
     }}>
-      {workspace.error ?
+      {workspace.error &&
         <Typography
           component="h1"
           variant="h2"
@@ -39,23 +49,30 @@ export default function WorkspaceMembersPage() {
           color="text.primary"
           gutterBottom
         >
-          {workspace.error.toString()}
-        </Typography> :
+          {workspace.error}
+        </Typography>}
+      {workspaceMembers.members &&
         <>
-          <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3 }}>
+          <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2 }}>
             <Link underline="hover" color="inherit" component={RouterLink} to={"/workspaces/" + workspace?.workspace?.id}>
               {workspace?.workspace?.name}
             </Link>
             <Typography color="text.primary">Members</Typography>
           </Breadcrumbs>
           <Box sx={{ mt: "5px" }}>
-            {workspaceMembership.membership?.role.name === "Owner" &&
-              <Button variant='contained' sx={{ mr: "5px" }}>Add</Button>
+            {workspaceMembership.membership?.role.name === OWNER_ROLE_NAME &&
+              <Button variant='contained' sx={{ mr: "5px" }} onClick={() => navigate("add")}>Add</Button>
             }
           </Box>
           {workspaceMembers.members &&
             <Container maxWidth='md'>
-              {workspaceMembers.members.map(m => <MemberElement membershipUser={m} />)}
+              {workspaceMembers.members.map(m =>
+                <MemberElement
+                  membership={workspaceMembership.membership}
+                  membershipUser={m}
+                  onUpdateMember={(roleId: number) => HandleUpdateMember(m.membership.id, roleId)}
+                  onRemoveMember={() => HandleRemoveMember(m.membership.id)}
+                />)}
             </Container>
           }
         </>

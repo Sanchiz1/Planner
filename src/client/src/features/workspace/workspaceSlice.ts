@@ -38,6 +38,7 @@ const workspaceSlice = createSlice({
     initialState,
     reducers: {
         getWorkspace: (state, action: PayloadAction<number>) => {
+            state.workspace = null;
             state.loading = true;
             state.success = null;
             state.error = null;

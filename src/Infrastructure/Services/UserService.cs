@@ -31,13 +31,18 @@ public class UserService : IUserService
         return res;
     }
 
-    public async Task<IApplicationUser> GetUserByEmail(string email)
+    public async Task<IApplicationUser?> GetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }
 
-    public async Task<IApplicationUser> GetUserById(int id)
+    public async Task<IApplicationUser?> GetUserById(int id)
     {
         return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+    }
+
+    public IQueryable<IApplicationUser> GetUsers()
+    {
+        return _userManager.Users;
     }
 }

@@ -7,6 +7,7 @@ import { getWorkspaceMembership } from '../../../features/workspaceMembership/wo
 import { ShowFailure, ShowSuccess } from '../../../Helpers/SnackBarHelper';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import WorkspaceSettingsComponent from './WorkspaceSettingsComponent';
+import { OWNER_ROLE_NAME } from '../../../config';
 
 export default function WorkspaceSettingsPage() {
   const dispatch = useAppDispatch();
@@ -47,10 +48,10 @@ export default function WorkspaceSettingsPage() {
 
   return (
     <Container component="main" maxWidth='xl' sx={{
-      pt: 6, pb: 6,
+      pt: 8, pb: 6,
       bgcolor: 'background.default'
     }}>
-      {workspaceMembership.error ?
+      {(workspaceMembership.error || (workspaceMembership.membership?.role.name !== OWNER_ROLE_NAME && workspaceMembership.membership)) ?
         <Typography
           component="h1"
           variant="h2"
@@ -61,19 +62,20 @@ export default function WorkspaceSettingsPage() {
           Permission denied
         </Typography>
         :
-        <>{
-          workspace.error &&
-          <Typography
-            component="h1"
-            variant="h2"
-            align="left"
-            color="text.primary"
-            gutterBottom
-          >
-            {workspace.error}
-          </Typography>
-        }
-          {workspace.workspace &&
+        <>
+          {
+            workspace.error &&
+            <Typography
+              component="h1"
+              variant="h2"
+              align="left"
+              color="text.primary"
+              gutterBottom
+            >
+              {workspace.error}
+            </Typography>
+          }
+          {workspace.workspace && workspaceMembership.membership &&
             <WorkspaceSettingsComponent workspace={workspace.workspace} membership={workspaceMembership.membership} />
           }
         </>
