@@ -150,7 +150,7 @@ public class WorkspaceController : BaseApiController
         var result = await sender.Send(new RemoveFromWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.WorkspaceId,
+            MembershipId = request.MembershipId,
             ToRemoveMembershipId = request.ToRemoveMembershipId
         });
 

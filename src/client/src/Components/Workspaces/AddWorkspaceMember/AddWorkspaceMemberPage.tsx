@@ -34,8 +34,9 @@ export default function AddWorkspaceMemberPage() {
 
         dispatch(getUsers(search));
     }
-
-    const HandleAddMember = () => {
+    
+    const HandleAddMember = (userId: number) => {
+        onAddMember(roleId);
     }
 
     return (
