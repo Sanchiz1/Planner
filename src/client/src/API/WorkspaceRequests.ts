@@ -23,11 +23,18 @@ export function AddWorkspaceMember(workspaceId: number, userId: number, roleId: 
         });
 }
 
-
 export function RemoveWorkspaceMember(workspaceId: number, toRemoveMembershipId: number) {
     return GetAjaxObservable(`/workspace/${workspaceId}/members`, "DELETE", true, { 'Content-Type': 'application/json' }, false,
         {
             "toRemoveMembershipId": toRemoveMembershipId
+        });
+}
+
+export function UpdateWorkspaceMemberRole(workspaceId: number, toUpdateMembershipId: number, toUpdateRoleId: number) {
+    return GetAjaxObservable(`/workspace/${workspaceId}/members`, "PATCH", true, { 'Content-Type': 'application/json' }, false,
+        {
+            "toUpdateMembershipId": toUpdateMembershipId,
+            "toUpdateRoleId": toUpdateRoleId
         });
 }
 

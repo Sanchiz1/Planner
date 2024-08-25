@@ -157,6 +157,25 @@ public class WorkspaceController : BaseApiController
         return HandleResult(result);
     }
 
+    [HttpPatch]
+    [Route("{workspaceId}/members")]
+    public async Task<ActionResult> UpdateWorkspaceMemberRole(int workspaceId, [FromBody] UpdateWorkspaceMemberRoleDto request)
+    {
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+
+        var result = await sender.Send(new UpdateWorkspaceMemberRoleCommand()
+        {
+            UserId = userId,
+            WorkspaceId = workspaceId,
+            ToUpdateMembershipId = request.ToUpdateMembershipId,
+            ToUpdateRoleId = request.ToUpdateRoleId
+        });
+
+        return HandleResult(result);
+    }
+
     [HttpPost]
     [Route("")]
     public async Task<ActionResult<int>> CreateWorkspace([FromBody] CreateWorkspaceDto request)

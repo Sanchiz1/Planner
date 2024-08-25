@@ -20,6 +20,8 @@ internal static class ErrorCodes
     public const string OwnerAlreadyExists = "OWNER_ALREADY_EXISTS";
 
     public const string CannotRemoveOwner = "CANNOT_REMOVE_OWNER";
-    
+
+    public const string CannotUpdateOwner = "CANNOT_UPDATE_OWNER";
+
     public const string PermissionDenied = "PERMISSON_DENIED";
 }

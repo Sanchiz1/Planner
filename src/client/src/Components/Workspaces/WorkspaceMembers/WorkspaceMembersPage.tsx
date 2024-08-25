@@ -3,13 +3,15 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import { useEffect } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
-import { getWorkspace } from '../../../features/workspace/workspaceSlice';
+import { getWorkspace, updateWorkspaceWait } from '../../../features/workspace/workspaceSlice';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import MemberElement from './MemberElement';
-import { getWorkspaceMembers, removeWorkspaceMember, removeWorkspaceMemberWait } from '../../../features/workspaceMembers/workspaceMembersSlice';
+import { getWorkspaceMembers, removeWorkspaceMember, removeWorkspaceMemberWait, updateWorkspaceMember, updateWorkspaceMemberWait } from '../../../features/workspaceMembers/workspaceMembersSlice';
 import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
 import { OWNER_ROLE_NAME } from '../../../config';
 import { ShowFailure, ShowSuccess } from '../../../Helpers/SnackBarHelper';
+import { MembershipUser } from '../../../Types/MembershipUser';
+import { UpdateWorkspaceMemberRole } from '../../../API/WorkspaceRequests';
 
 export default function WorkspaceMembersPage() {
   const dispatch = useAppDispatch();
@@ -39,6 +41,16 @@ export default function WorkspaceMembersPage() {
     dispatch(removeWorkspaceMemberWait());
   }, [workspaceMembers.removeSuccess, workspaceMembers.removeError]);
 
+  useEffect(() => {
+    if (workspaceMembers.updateSuccess) {
+      ShowSuccess("Member updated successfully");
+    };
+    if (workspaceMembers.updateError) {
+      ShowFailure(workspaceMembers.updateError);
+    };
+    dispatch(updateWorkspaceMemberWait());
+  }, [workspaceMembers.updateSuccess, workspaceMembers.updateError]);
+
   const HandleRemoveMember = (membershipId: number) => {
     if (workspace.workspace?.id && membershipId) {
       dispatch(removeWorkspaceMember({
@@ -49,7 +61,13 @@ export default function WorkspaceMembersPage() {
   }
 
   const HandleUpdateMember = (membershipId: number, roleId: number) => {
-
+    if (workspace.workspace?.id && membershipId && roleId) {
+      dispatch(updateWorkspaceMember({
+        workspaceId: workspace.workspace?.id,
+        ToUpdateMembershipId: membershipId,
+        ToUpdateRoleId: roleId
+      }));
+    }
   }
 
   return (

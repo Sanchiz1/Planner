@@ -12,6 +12,21 @@ public class Membership : BaseEntity
 
     private Membership() { }
 
+    public void UpdateRole(int roleId)
+    {
+        if (RoleId == Role.OwnerRole.Id)
+        {
+            throw new ArgumentException("Cannot update Owner");
+        }
+
+        if (roleId == Role.OwnerRole.Id)
+        {
+            throw new ArgumentException("Cannot add another Owner to workspace");
+        }
+
+        RoleId = roleId;
+    }
+
     public bool IsMembershipOwner(int userId)
     {
         return UserId == userId;
@@ -32,7 +47,7 @@ public class Membership : BaseEntity
     {
         if (roleId == Role.OwnerRole.Id)
         {
-            throw new ArgumentException("Cannot add another owner to workspace");
+            throw new ArgumentException("Cannot add another Owner to workspace");
         }
         
         return new Membership()

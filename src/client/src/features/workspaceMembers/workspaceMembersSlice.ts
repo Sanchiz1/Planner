@@ -3,6 +3,7 @@ import { Workspace } from "../../Types/Workspace";
 import { Membership } from "../../Types/Memership";
 import { MembershipUser } from "../../Types/MembershipUser";
 import { RemoveMemberPayload } from "./types/RemoveMemberPayload";
+import { UpdateWorkspaceMemberPayload } from "./types/UpdateWorkspaceMemberPayload";
 
 export interface WorkspaceMembersType {
     members: MembershipUser[] | null,
@@ -52,20 +53,20 @@ const workspaceSlice = createSlice({
             state.success = false;
             state.error = action.payload;
         },
-        updateWorkspaceMember: (state, action: PayloadAction<MembershipUser>) => {
+        updateWorkspaceMember: (state, action: PayloadAction<UpdateWorkspaceMemberPayload>) => {
             state.updating = true;
             state.updateSuccess = null;
             state.updateError = null;
         },
-        updateWorkspaceMemberSuccess: (state, action: PayloadAction<MembershipUser>) => {
+        updateWorkspaceMemberSuccess: (state, action: PayloadAction<UpdateWorkspaceMemberPayload>) => {
             state.updating = false;
             state.updateSuccess = true;
             state.updateError = null;
 
-            const index = state.members?.findIndex(member => member.membership.id === action.payload.membership.id);
+            const index = state.members?.findIndex(member => member.membership.id === action.payload.ToUpdateMembershipId);
             if (index !== undefined && state.members) {
-                state.members[index] = action.payload;
-            }
+                state.members[index].membership.roleId = action.payload.ToUpdateRoleId;
+            };
         },
         updateWorkspaceMemberFailure: (state, action: PayloadAction<string>) => {
             state.updating = false;
@@ -111,6 +112,7 @@ export const {
     updateWorkspaceMember,
     updateWorkspaceMemberSuccess,
     updateWorkspaceMemberFailure,
+    updateWorkspaceMemberWait,
     removeWorkspaceMember,
     removeWorkspaceMemberFailure,
     removeWorkspaceMemberSuccess,
