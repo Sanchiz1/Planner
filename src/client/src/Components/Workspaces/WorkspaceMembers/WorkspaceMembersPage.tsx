@@ -6,9 +6,10 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { getWorkspace } from '../../../features/workspace/workspaceSlice';
 import { useAppDispatch, useAppSelector } from '../../../store';
 import MemberElement from './MemberElement';
-import { getWorkspaceMembers } from '../../../features/workspaceMembers/workspaceMembersSlice';
+import { getWorkspaceMembers, removeWorkspaceMember, removeWorkspaceMemberWait } from '../../../features/workspaceMembers/workspaceMembersSlice';
 import { getWorkspaceMembership } from '../../../features/workspaceMembership/workspaceMembershipSlice';
 import { OWNER_ROLE_NAME } from '../../../config';
+import { ShowFailure, ShowSuccess } from '../../../Helpers/SnackBarHelper';
 
 export default function WorkspaceMembersPage() {
   const dispatch = useAppDispatch();
@@ -28,8 +29,23 @@ export default function WorkspaceMembersPage() {
     dispatch(getWorkspaceMembership(id));
   }, [workspaceId]);
 
-  const HandleRemoveMember = (membershipId: number) => {
+  useEffect(() => {
+    if (workspaceMembers.removeSuccess) {
+      ShowSuccess("Member removed successfully");
+    };
+    if (workspaceMembers.removeError) {
+      ShowFailure(workspaceMembers.removeError);
+    };
+    dispatch(removeWorkspaceMemberWait());
+  }, [workspaceMembers.removeSuccess, workspaceMembers.removeError]);
 
+  const HandleRemoveMember = (membershipId: number) => {
+    if (workspace.workspace?.id && membershipId) {
+      dispatch(removeWorkspaceMember({
+        workspaceId: workspace.workspace?.id,
+        ToRemoveMembershipId: membershipId
+      }));
+    }
   }
 
   const HandleUpdateMember = (membershipId: number, roleId: number) => {

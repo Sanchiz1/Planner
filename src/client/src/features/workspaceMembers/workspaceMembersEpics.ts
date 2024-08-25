@@ -1,9 +1,10 @@
 import { Action, PayloadAction } from "@reduxjs/toolkit";
 import { ofType } from "redux-observable";
 import { catchError, map, merge, mergeMap, Observable, of } from "rxjs";
-import { GetWorkspaceMembers } from "../../API/WorkspaceRequests";
+import { GetWorkspaceMembers, RemoveWorkspaceMember } from "../../API/WorkspaceRequests";
 import { MembershipUser } from "../../Types/MembershipUser";
-import { getWorkspaceMembers, getWorkspaceMembersFailure, getWorkspaceMembersSuccess, updateWorkspaceMember, updateWorkspaceMemberFailure, updateWorkspaceMemberSuccess } from "./workspaceMembersSlice";
+import { getWorkspaceMembers, getWorkspaceMembersFailure, getWorkspaceMembersSuccess, removeWorkspaceMember, removeWorkspaceMemberFailure, removeWorkspaceMemberSuccess, updateWorkspaceMember, updateWorkspaceMemberFailure, updateWorkspaceMemberSuccess } from "./workspaceMembersSlice";
+import { RemoveMemberPayload } from "./types/RemoveMemberPayload";
 
 
 export const getWorkspaceMembersEpic = (action$: Observable<Action>) => action$.pipe(
@@ -17,6 +18,19 @@ export const getWorkspaceMembersEpic = (action$: Observable<Action>) => action$.
         )),
     catchError((error, caught) =>
         merge(of(getWorkspaceMembersFailure(error.message)),
+            caught
+        ))
+);
+
+export const removeWorkspaceMemberEpic = (action$: Observable<Action>) => action$.pipe(
+    ofType(removeWorkspaceMember.type),
+    mergeMap((action: PayloadAction<RemoveMemberPayload>) =>
+        RemoveWorkspaceMember(action.payload.workspaceId, action.payload.ToRemoveMembershipId).pipe(
+            map(() => removeWorkspaceMemberSuccess(action.payload)),
+        )
+    ),
+    catchError((error, caught) =>
+        merge(of(removeWorkspaceMemberFailure(error.message)),
             caught
         ))
 );

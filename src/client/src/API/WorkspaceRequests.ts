@@ -24,7 +24,7 @@ export function AddWorkspaceMember(workspaceId: number, userId: number, roleId: 
 }
 
 
-export function RemoveWorkspaceMembers(workspaceId: number, toRemoveMembershipId: number) {
+export function RemoveWorkspaceMember(workspaceId: number, toRemoveMembershipId: number) {
     return GetAjaxObservable(`/workspace/${workspaceId}/members`, "DELETE", true, { 'Content-Type': 'application/json' }, false,
         {
             "toRemoveMembershipId": toRemoveMembershipId

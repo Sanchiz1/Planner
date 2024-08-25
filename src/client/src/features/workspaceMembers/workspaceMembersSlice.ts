@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Workspace } from "../../Types/Workspace";
 import { Membership } from "../../Types/Memership";
 import { MembershipUser } from "../../Types/MembershipUser";
+import { RemoveMemberPayload } from "./types/RemoveMemberPayload";
 
 export interface WorkspaceMembersType {
     members: MembershipUser[] | null,
@@ -10,7 +11,10 @@ export interface WorkspaceMembersType {
     error: string | null,
     updating: boolean,
     updateSuccess: boolean | null,
-    updateError: string | null
+    updateError: string | null,
+    removing: boolean,
+    removeSuccess: boolean | null,
+    removeError: string | null
 }
 const initialState: WorkspaceMembersType =
 {
@@ -20,7 +24,10 @@ const initialState: WorkspaceMembersType =
     error: null,
     updating: false,
     updateSuccess: null,
-    updateError: null
+    updateError: null,
+    removing: false,
+    removeSuccess: null,
+    removeError: null
 };
 
 const workspaceSlice = createSlice({
@@ -54,7 +61,7 @@ const workspaceSlice = createSlice({
             state.updating = false;
             state.updateSuccess = true;
             state.updateError = null;
-            
+
             const index = state.members?.findIndex(member => member.membership.id === action.payload.membership.id);
             if (index !== undefined && state.members) {
                 state.members[index] = action.payload;
@@ -64,7 +71,36 @@ const workspaceSlice = createSlice({
             state.updating = false;
             state.updateSuccess = false;
             state.updateError = action.payload;
-        }
+        },
+        updateWorkspaceMemberWait: (state) => {
+            state.updating = false;
+            state.updateSuccess = null;
+            state.updateError = null;
+        },
+        removeWorkspaceMember: (state, action: PayloadAction<RemoveMemberPayload>) => {
+            state.removing = true;
+            state.removeSuccess = null;
+            state.removeError = null;
+        },
+        removeWorkspaceMemberSuccess: (state, action: PayloadAction<RemoveMemberPayload>) => {
+            state.removing = false;
+            state.removeSuccess = true;
+            state.removeError = null;
+
+            if (state.members) {
+                state.members = state.members.filter(member => member.membership.id !== action.payload.ToRemoveMembershipId);
+            }
+        },
+        removeWorkspaceMemberFailure: (state, action: PayloadAction<string>) => {
+            state.removing = false;
+            state.removeSuccess = false;
+            state.removeError = action.payload;
+        },
+        removeWorkspaceMemberWait: (state) => {
+            state.removing = false;
+            state.removeSuccess = null;
+            state.removeError = null;
+        },
     }
 })
 
@@ -74,7 +110,11 @@ export const {
     getWorkspaceMembersFailure,
     updateWorkspaceMember,
     updateWorkspaceMemberSuccess,
-    updateWorkspaceMemberFailure
+    updateWorkspaceMemberFailure,
+    removeWorkspaceMember,
+    removeWorkspaceMemberFailure,
+    removeWorkspaceMemberSuccess,
+    removeWorkspaceMemberWait
 } = workspaceSlice.actions;
 
 export default workspaceSlice.reducer;

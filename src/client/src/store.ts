@@ -10,8 +10,8 @@ import { getMyWorkspacesEpic } from "./features/myWorkspaces/myWorkspacesEpics";
 import myWorkspacesReducer from "./features/myWorkspaces/myWorkspacesSlice";
 import { createWorkspaceEpic, deleteWorkspaceEpic, getWorkspaceEpic, updateWorkspaceEpic } from "./features/workspace/workspaceEpics";
 import workspaceReducer from "./features/workspace/workspaceSlice";
-import { getWorkspaceMembersEpic } from "./features/workspaceMembers/workspaceMembersEpics";
-import workspaceMembersReducer from "./features/workspaceMembers/workspaceMembersSlice";
+import { getWorkspaceMembersEpic, removeWorkspaceMemberEpic } from "./features/workspaceMembers/workspaceMembersEpics";
+import workspaceMembersReducer, { removeWorkspaceMember } from "./features/workspaceMembers/workspaceMembersSlice";
 import workspaceMembershipReducer from "./features/workspaceMembership/workspaceMembershipSlice";
 import { getWorkspaceMembershipEpic } from "./features/workspaceMembership/workspaceMembershipEpics";
 import { addWorkspaceMemberEpic, getUsersEpic } from "./features/addWorkspaceMember/usersEpics";
@@ -28,6 +28,7 @@ const rootEpic: Epic<Action, Action, void, any> = combineEpics<Action, Action, v
     createWorkspaceEpic,
     getWorkspaceMembershipEpic,
     getWorkspaceMembersEpic,
+    removeWorkspaceMemberEpic,
     getUsersEpic,
     addWorkspaceMemberEpic
 );

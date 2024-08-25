@@ -41,7 +41,7 @@ export default function MemberElement(props: MemershipWorkspaceElementProps) {
                     {membership?.role.name === OWNER_ROLE_NAME ?
                         <>
                             <Grid>
-                                <IconButton sx={{ color: 'grey', borderRadius: '7px' }}><DeleteOutlineIcon /></IconButton>
+                                <IconButton sx={{ color: 'grey', borderRadius: '7px' }} onClick={HandleRemoveMember}><DeleteOutlineIcon /></IconButton>
                             </Grid>
                             <Grid sx={{ ml: '5px' }}>
                                 <Select
