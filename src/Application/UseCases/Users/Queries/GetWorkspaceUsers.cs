@@ -1,16 +1,12 @@
 ﻿using Application.Common.DTOs;
+using Application.Common.Errors;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Result;
 
 namespace Application.UseCases.Users.Queries;
 
@@ -37,11 +33,11 @@ public class GetWorkspaceUsersQueryHandler : IRequestHandler<GetWorkspaceUsersQu
         var workspace = await _context.Workspaces.FirstOrDefaultAsync(w => w.Id == request.WorkspaceId);
 
         if (workspace is null) 
-            return new NotFoundException("Workspace not found");
+            return new Error(ErrorCodes.WorkspaceNotFound, "Workspace not found");
 
         if (!workspace.IsPublic &&
             !await _context.Memberships.AnyAsync(m => m.UserId == request.UserId && m.WorkspaceId == workspace.Id))
-                return new PermissionDeniedException("Workspace is private");
+            return new Error(ErrorCodes.MembershipNotFound, "Not a workspace member");
 
         return _mapper.Map<List<UserMembershipDto>>(await _userService.GetWorkspaceUsers(request.WorkspaceId));
     }

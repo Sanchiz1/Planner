@@ -1,15 +1,10 @@
-﻿using Application.Common.DTOs;
+﻿using Application.Common.Errors;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Result;
 
 namespace Application.UseCases.Tasks.Commands;
 
@@ -38,10 +33,10 @@ public class CreateTaskCommandHandler : IRequestHandler<CreateTaskCommand, Resul
             .FirstOrDefaultAsync(m => m.UserId == request.UserId && m.WorkspaceId == request.WorkspaceId, cancellationToken);
 
         if (membership is null)
-            return new NotFoundException("Not a workspace member");
+            return new Error(ErrorCodes.MembershipNotFound, "Not a workspace member");
 
         if (Role.IsViewerRole(membership.RoleId))
-            return new PermissionDeniedException("Only workspace Owner or Member can create tasks");
+            return new Error(ErrorCodes.PermissionDenied, "Only workspace Owner or Member can create tasks");
 
         var entity = new Domain.Entities.Task(
             request.WorkspaceId,

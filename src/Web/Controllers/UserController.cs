@@ -1,16 +1,12 @@
 ﻿using Application.Common.DTOs;
 using Application.UseCases.Users.Queries;
-using Application.UseCases.Workspaces.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Web.Extensions;
-using Web.Models.Workspace;
+using Web.Models.User;
 
 namespace Web.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class UserController : Controller
+public class UserController : BaseApiController
 {
     private readonly ISender sender;
     public UserController(ISender _sender)
@@ -19,17 +15,28 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    [Route("GetUser")]
-    public async Task<ActionResult<UserDto>> GetUser(string email)
+    [Route("email/{email}")]
+    public async Task<ActionResult<UserDto>> GetUserByEmail(string email)
     {
         var result = await sender.Send(new GetUserByEmailQuery()
         {
             Email = email
         });
 
-        return result.Match<ActionResult<UserDto>>(
-            res => res,
-            ex => BadRequest(ex)
-        );
+        return HandleResult(result);
+    }
+
+    [HttpGet]
+    [Route("")]
+    public async Task<ActionResult<UserDto>> GetUsers([FromQuery] UserQueryParameters query)
+    {
+        var result = await sender.Send(new GetUsersQuery()
+        {
+            Email = query.Email,
+            Page = query.Page,
+            Size = query.Size,
+        });
+
+        return HandleResult(result);
     }
 }

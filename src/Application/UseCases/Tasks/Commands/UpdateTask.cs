@@ -1,13 +1,14 @@
-﻿using Application.Common.Exceptions;
+﻿using Application.Common.Errors;
+using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Result;
 
 namespace Application.UseCases.Tasks.Commands;
 
-public class UpdateTaskCommand : IRequest<Result<int>>
+public class UpdateTaskCommand : IRequest<Result>
 {
     public int Id { get; init; }
     public required string Title { get; init; }
@@ -17,7 +18,7 @@ public class UpdateTaskCommand : IRequest<Result<int>>
     public int UserId { get; init; }
 }
 
-public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Result<int>>
+public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 
@@ -26,20 +27,20 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Resul
         _context = context;
     }
 
-    public async Task<Result<int>> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Tasks.FindAsync(request.Id);
 
-        if (entity is null) return new Exception("Task not found");
+        if (entity is null) return new Error(ErrorCodes.TaskNotFound, "Task not found");
 
         var membership = await _context.Memberships
             .FirstOrDefaultAsync(m => m.UserId == request.UserId && m.WorkspaceId == entity.WorkspaceId, cancellationToken);
 
         if (membership is null)
-            return new NotFoundException("Not a workspace member");
+            return new Error(ErrorCodes.MembershipNotFound, "Not a workspace member");
 
         if (Role.IsViewerRole(membership.RoleId))
-            return new PermissionDeniedException("Only workspace Owner or Member can update tasks");
+            return new Error(ErrorCodes.PermissionDenied, "Only workspace Owner or Member can update tasks");
 
         entity.UpdateTask(request.Title,
             request.Description,
@@ -50,6 +51,6 @@ public class UpdateTaskCommandHandler : IRequestHandler<UpdateTaskCommand, Resul
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return entity.Id;
+        return Result.Success();
     }
 }

@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-
-namespace Application.Common.DTOs;
+﻿namespace Application.Common.DTOs;
 
 public class UserDto
 {

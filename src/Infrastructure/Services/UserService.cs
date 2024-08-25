@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Models;
-using Domain.Entities;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,7 @@ public class UserService : IUserService
 
     public async Task<List<UserMembership>> GetWorkspaceUsers(int workSpaceId)
     {
-        var res = await _context.Memberships.Where(m => m.WorkspaceId == workSpaceId).Join(_userManager.Users, m => m.UserId, u => u.Id, (m, u) =>
+        var res = await _context.Memberships.Include(m => m.Role).Where(m => m.WorkspaceId == workSpaceId).Join(_userManager.Users, m => m.UserId, u => u.Id, (m, u) =>
             new UserMembership
             {
                 User = u,
@@ -32,13 +31,18 @@ public class UserService : IUserService
         return res;
     }
 
-    public async Task<IApplicationUser> GetUserByEmail(string email)
+    public async Task<IApplicationUser?> GetUserByEmail(string email)
     {
         return await _userManager.FindByEmailAsync(email);
     }
 
-    public async Task<IApplicationUser> GetUserById(int id)
+    public async Task<IApplicationUser?> GetUserById(int id)
     {
         return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+    }
+
+    public IQueryable<IApplicationUser> GetUsers()
+    {
+        return _userManager.Users;
     }
 }

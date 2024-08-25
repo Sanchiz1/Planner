@@ -1,16 +1,10 @@
 ﻿using Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using static Application.Common.Interfaces.IApplicationDbContext;
 
 namespace Infrastructure.Data;
 

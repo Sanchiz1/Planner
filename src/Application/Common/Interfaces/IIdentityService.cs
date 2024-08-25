@@ -1,6 +1,5 @@
 ﻿using Application.Common.Models;
-using Domain.Entities;
-using Shared;
+using Shared.Result;
 
 namespace Application.Common.Interfaces;
 

@@ -1,6 +1,4 @@
 ﻿using Application.Common.DTOs;
-using Application.Common.Exceptions;
-using Application.Common.ViewModels;
 using Application.UseCases.Users.Queries;
 using Application.UseCases.Workspaces.Commands;
 using Application.UseCases.Workspaces.Queries;
@@ -8,15 +6,13 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Result;
 using Web.Extensions;
 using Web.Models.Workspace;
 
 namespace Web.Controllers;
-
 [Authorize]
-[ApiController]
-[Route("[controller]")]
-public class WorkspaceController : Controller
+public class WorkspaceController : BaseApiController
 {
     private readonly ISender sender;
     public WorkspaceController(ISender _sender)
@@ -25,8 +21,8 @@ public class WorkspaceController : Controller
     }
 
     [HttpGet]
-    [Route("GetWorkspaces")]
-    public async Task<ActionResult<List<WorkspaceDto>>> GetWorkspaces()
+    [Route("member")]
+    public async Task<ActionResult<List<MembershipDto>>> GetMemberWorkspaces()
     {
         var userId = User.GetUserId();
 
@@ -37,19 +33,47 @@ public class WorkspaceController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<List<WorkspaceDto>>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
 
+    [AllowAnonymous]
     [HttpGet]
-    [Route("GetWorkspaceMembers")]
-    public async Task<ActionResult<List<UserMembershipDto>>> GetWorkspaceMembers(int workspaceId)
+    [Route("{workspaceId}")]
+    public async Task<ActionResult<WorkspaceDto>> GetWorkspace(int workspaceId)
     {
         var userId = User.GetUserId();
 
-        if (userId == 0) return Unauthorized();
+        var result = await sender.Send(new GetWorkspaceQuery()
+        {
+            WorkspaceId = workspaceId,
+            UserId = userId
+        });
+
+        return HandleResult(result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("{workspaceId}/membership")]
+    public async Task<ActionResult<MembershipDto>> GetWorkspaceMembership(int workspaceId)
+    {
+        var userId = User.GetUserId();
+
+        var result = await sender.Send(new GetWorkspaceMembershipQuery()
+        {
+            WorkspaceId = workspaceId,
+            UserId = userId
+        });
+
+        return HandleResult(result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    [Route("{workspaceId}/members")]
+    public async Task<ActionResult<List<UserMembershipDto>>> GetWorkspaceMembers(int workspaceId)
+    {
+        var userId = User.GetUserId();
 
         var result = await sender.Send(new GetWorkspaceUsersQuery()
         {
@@ -57,36 +81,12 @@ public class WorkspaceController : Controller
             UserId = userId
         });
 
-        return result.Match<ActionResult<List<UserMembershipDto>>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
-    }
-
-    [HttpPost]
-    [Route("CreateWorkspace")]
-    public async Task<ActionResult<int>> CreateWorkspace([FromBody]CreateWorkspaceDto request)
-    {
-        var userId = User.GetUserId();
-
-        if (userId == 0) return Unauthorized();
-        
-        var result = await sender.Send(new CreateWorkspaceCommand()
-        {
-            UserId = userId,
-            WorkspaceName = request.WorkspaceName,
-            WorkspaceIsPublic = request.WorkspaceIsPublic
-        });
-
-        return result.Match<ActionResult<int>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
-    [HttpPost]
-    [Route("UpdateWorkspace")]
-    public async Task<ActionResult<int>> UpdateWorkspace([FromBody]UpdateWorkspaceDto request)
+    [HttpPut]
+    [Route("{workspaceId}")]
+    public async Task<ActionResult> UpdateWorkspace(int workspaceId, [FromBody]UpdateWorkspaceDto request)
     {
         var userId = User.GetUserId();
         
@@ -95,20 +95,17 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new UpdateWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.WorkspaceId,
+            WorkspaceId = workspaceId,
             WorkspaceName = request.WorkspaceName,
             WorkspaceIsPublic = request.WorkspaceIsPublic
         });
 
-        return result.Match<ActionResult<int>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
-    [HttpPost]
-    [Route("DeleteWorkspace")]
-    public async Task<ActionResult<string>> DeleteWorkspace([FromBody]DeleteWorkspaceDto request)
+    [HttpDelete]
+    [Route("{workspaceId}")]
+    public async Task<ActionResult> DeleteWorkspace(int workspaceId)
     {
         var userId = User.GetUserId();
 
@@ -117,18 +114,15 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new DeleteWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.WorkspaceId
+            WorkspaceId = workspaceId
         });
 
-        return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
     [HttpPost]
-    [Route("AddtoWorkspace")]
-    public async Task<ActionResult<string>> AddtoWorkspace([FromBody]AddToWorkspaceDto request)
+    [Route("{workspaceId}/members")]
+    public async Task<ActionResult> AddtoWorkspace(int workspaceId, [FromBody]AddToWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -137,20 +131,17 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new AddToWorkspaceCommand()
         {
             UserId = userId,
-            WorkspaceId = request.MembershipId,
+            WorkspaceId = workspaceId,
             ToAddUserId = request.ToAddUserId,
             ToAddRoleId = request.ToAddRoleId
         });
 
-        return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
     }
     
-    [HttpPost]
-    [Route("RemoveFromWorkspace")]
-    public async Task<ActionResult<string>> RemoveFromWorkspace([FromBody]RemoveFromWorkspaceDto request)
+    [HttpDelete]
+    [Route("{workspaceId}/members")]
+    public async Task<ActionResult> RemoveFromWorkspace(int workspaceId, [FromBody]RemoveFromWorkspaceDto request)
     {
         var userId = User.GetUserId();
 
@@ -159,13 +150,47 @@ public class WorkspaceController : Controller
         var result = await sender.Send(new RemoveFromWorkspaceCommand()
         {
             UserId = userId,
-            MembershipId = request.MembershipId,
+            WorkspaceId = workspaceId,
             ToRemoveMembershipId = request.ToRemoveMembershipId
         });
 
-        return result.Match<ActionResult<string>>(
-            res => res,
-            ex => BadRequest(ex.Message)
-        );
+        return HandleResult(result);
+    }
+
+    [HttpPatch]
+    [Route("{workspaceId}/members")]
+    public async Task<ActionResult> UpdateWorkspaceMemberRole(int workspaceId, [FromBody] UpdateWorkspaceMemberRoleDto request)
+    {
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+
+        var result = await sender.Send(new UpdateWorkspaceMemberRoleCommand()
+        {
+            UserId = userId,
+            WorkspaceId = workspaceId,
+            ToUpdateMembershipId = request.ToUpdateMembershipId,
+            ToUpdateRoleId = request.ToUpdateRoleId
+        });
+
+        return HandleResult(result);
+    }
+
+    [HttpPost]
+    [Route("")]
+    public async Task<ActionResult<int>> CreateWorkspace([FromBody] CreateWorkspaceDto request)
+    {
+        var userId = User.GetUserId();
+
+        if (userId == 0) return Unauthorized();
+
+        var result = await sender.Send(new CreateWorkspaceCommand()
+        {
+            UserId = userId,
+            WorkspaceName = request.WorkspaceName,
+            WorkspaceIsPublic = request.WorkspaceIsPublic
+        });
+
+        return HandleResult(result);
     }
 }

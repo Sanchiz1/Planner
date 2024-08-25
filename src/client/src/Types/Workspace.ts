@@ -1,4 +1,5 @@
 export interface Workspace{
     id: number,
-    title: string
+    name: string,
+    isPublic: boolean
 }

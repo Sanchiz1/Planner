@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Application.Common.Claims;
+using System.Security.Claims;
 
 namespace Web.Extensions;
 
@@ -8,7 +9,7 @@ public static class ClaimsPrincipalExtensions
     {
         ArgumentNullException.ThrowIfNull(principal);
 
-        var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = principal.FindFirst(AppClaims.IdClaimType)?.Value;
 
         return userId == null ? 0 : Convert.ToInt32(userId);
     }

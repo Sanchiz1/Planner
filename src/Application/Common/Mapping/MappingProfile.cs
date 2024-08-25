@@ -1,11 +1,6 @@
 ﻿using Application.Common.DTOs;
 using AutoMapper;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 
@@ -16,6 +11,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<IApplicationUser, UserDto>();
+        CreateMap<Role, RoleDto>();
         CreateMap<Membership, MembershipDto>();
         CreateMap<UserMembership, UserMembershipDto>();
         CreateMap<Workspace, WorkspaceDto>();

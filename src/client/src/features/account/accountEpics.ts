@@ -7,7 +7,7 @@ import { getUser, getUserFailure, getUserSuccess } from "./accountSlice";
 export const getUserEpic = (action$: Observable<Action>) => action$.pipe(
     ofType(getUser.type),
     map(() => {
-        const token = JSON.parse(localStorage.getItem(ACCESS_TOKEN_STORAGE_NAME) as string) ?? null;
+        const token =localStorage.getItem(ACCESS_TOKEN_STORAGE_NAME) ?? null;
 
         return token ? getUserSuccess(token) : getUserFailure("Invalid token");
     })

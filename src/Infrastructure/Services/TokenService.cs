@@ -1,14 +1,11 @@
-﻿using Application.Common.Models;
+﻿using Application.Common.Claims;
+using Application.Common.Models;
 using Infrastructure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Services;
 
@@ -28,9 +25,9 @@ public class TokenService
 
         var claims = new List<Claim>
         {
-            new Claim("Email", applicationUser.Email!),
-            new Claim("DisplayName", applicationUser.DisplayName),
-            new Claim("Id", applicationUser.Id.ToString()),
+            new Claim(AppClaims.EmailClaimType, applicationUser.Email!),
+            new Claim(AppClaims.DisplayNameClaimType, applicationUser.DisplayName),
+            new Claim(AppClaims.IdClaimType, applicationUser.Id.ToString()),
         };
 
         

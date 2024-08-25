@@ -11,15 +11,13 @@ export const loginEpic = (action$: Observable<Action>) => action$.pipe(
     mergeMap((action: PayloadAction<LoginPayload>) =>
         Login(action.payload.email, action.payload.password).pipe(
             map((res: LoginType) => {
-                localStorage.setItem(ACCESS_TOKEN_STORAGE_NAME, JSON.stringify(
-                    res.value
-                ));
+                localStorage.setItem(ACCESS_TOKEN_STORAGE_NAME, res.value);
                 return loginSuccess();
             }
             )
         )),
     catchError((error, caught) =>
-        merge(of(loginFailure(error)),
+        merge(of(loginFailure(error.message)),
             caught
         ))
 );

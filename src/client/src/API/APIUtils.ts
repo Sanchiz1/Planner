@@ -6,9 +6,9 @@ import NotFoundError from "../Types/NotFoundError";
 
 const url = "https://localhost:7269";
 
-export type response<T = any> = {
-    data: T,
-    error?: string
+export type ApiErrorType = {
+    code: string,
+    message: string
 }
 
 export function GetAjaxObservable<T>(requestUrl: string,
@@ -37,18 +37,16 @@ export function GetAjaxObservable<T>(requestUrl: string,
             res.response
         ),
         catchError((error) => {
-            if (error?.response?.error == null || error.status == 500) {
-                throw new Error("Internal error")
+            const apiError: ApiErrorType = error?.response;
+
+            if (error && error.status == 401) {
+                throw new Error(apiError?.message ?? "Unauthorized")
             }
 
-            if (error.status == 401) {
-                throw new Error("Unauthorized")
+            if (error && error.status == 404) {
+                throw new NotFoundError(apiError?.message ?? "Not found");
             }
 
-            if (error.status == 404) {
-                throw new NotFoundError(error.response.error);
-            }
-
-            throw new Error(error.response.error);
+            throw new Error(apiError?.message ?? "Internal error");
         }))
 }
